@@ -38,6 +38,9 @@ dependencies:
   audio_session: ^0.1.21
   just_audio: ^0.9.40
 
+  # Routing
+  go_router: ^14.6.0
+
   # Notifications & foreground service
   flutter_local_notifications: ^17.2.2
   flutter_foreground_task: ^8.10.0

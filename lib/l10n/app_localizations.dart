@@ -103,6 +103,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Simple Home Workout Timer'**
   String get appTitle;
+
+  /// No description provided for @emptyHome.
+  ///
+  /// In en, this message translates to:
+  /// **'No routines yet'**
+  String get emptyHome;
+
+  /// No description provided for @emptyHomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to get started'**
+  String get emptyHomeSubtitle;
+
+  /// No description provided for @emptyHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed workouts yet'**
+  String get emptyHistory;
+
+  /// No description provided for @addRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'New Routine'**
+  String get addRoutine;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @cycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get cycle;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @repsTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'reps'**
+  String get repsTarget;
+
+  /// No description provided for @completeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Done!'**
+  String get completeTitle;
+
+  /// No description provided for @repeatRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get repeatRoutine;
+
+  /// No description provided for @goHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get goHome;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @routineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get routineTitle;
+
+  /// No description provided for @prepTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Prep time'**
+  String get prepTime;
+
+  /// No description provided for @cooldownTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooldown time'**
+  String get cooldownTime;
+
+  /// No description provided for @totalCycles.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycles'**
+  String get totalCycles;
+
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add item'**
+  String get addItem;
+
+  /// No description provided for @seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get seconds;
+
+  /// No description provided for @errorLoadData.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load data. Please retry.'**
+  String get errorLoadData;
+
+  /// No description provided for @errorLoadRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load routine.'**
+  String get errorLoadRoutine;
+
+  /// No description provided for @errorSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed. Please retry.'**
+  String get errorSave;
+
+  /// No description provided for @typeWorkTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get typeWorkTime;
+
+  /// No description provided for @typeWorkReps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get typeWorkReps;
+
+  /// No description provided for @typeRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get typeRest;
+
+  /// No description provided for @exerciseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get exerciseName;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (s)'**
+  String get duration;
+
+  /// No description provided for @targetReps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get targetReps;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @pageNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found.'**
+  String get pageNotFound;
 }
 
 class _AppLocalizationsDelegate
