@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/feedback_provider.dart';
 import 'providers/os_provider.dart';
+import 'routing/app_router.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -42,23 +43,13 @@ class FitnessTimerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'fitness_timer',
       theme: AppTheme.dark,
       themeMode: ThemeMode.dark,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const _BootstrapScreen(),
+      routerConfig: appRouter,
     );
-  }
-}
-
-/// Placeholder home screen — replaced in Phase 5.
-class _BootstrapScreen extends StatelessWidget {
-  const _BootstrapScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold();
   }
 }
