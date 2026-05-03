@@ -1,0 +1,44 @@
+# Build / tooling
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Platform-specific generated / shared
+ios/Pods/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Runner/GeneratedPluginRegistrant.*
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/**/GeneratedPluginRegistrant.java
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_plugin_registrant.*
+linux/flutter/generated_plugins.cmake
+linux/flutter/generated_plugin_registrant.*
+macos/Flutter/GeneratedPluginRegistrant.swift
+
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Claude workflow (local-only artifacts)
+.claude/settings.local.json
+.claude/state/
+.claude/outputs/
+.claude/scheduled_tasks.lock
