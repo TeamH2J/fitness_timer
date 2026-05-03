@@ -36,7 +36,7 @@ class TimerRunPage extends ConsumerStatefulWidget {
 }
 
 class _TimerRunPageState extends ConsumerState<TimerRunPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final AnimationController _animController;
   StreamSubscription<dynamic>? _eventSub;
   RoutineWithItems? _routineData;
@@ -46,6 +46,7 @@ class _TimerRunPageState extends ConsumerState<TimerRunPage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // 60fps animation controller — drives AnimatedBuilder for the painter.
     _animController = AnimationController(
       vsync: this,
@@ -54,7 +55,22 @@ class _TimerRunPageState extends ConsumerState<TimerRunPage>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _animController.stop();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_routineData == null) return;
+      final snapshot = ref.read(timerEngineProvider(_routineData!));
+      if (snapshot.state == TimerState.running &&
+          !_animController.isAnimating) {
+        _animController.repeat();
+      }
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _disposed = true;
     _animController.dispose();
     _eventSub?.cancel();
