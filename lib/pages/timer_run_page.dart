@@ -183,8 +183,6 @@ class _TimerRunView extends ConsumerWidget {
     final remainingMs = snapshot.remainingMs;
     final remainingSeconds = (remainingMs / 1000).ceil();
 
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -230,7 +228,7 @@ class _TimerRunView extends ConsumerWidget {
                       child: CustomPaint(
                         painter: CircularProgressPainter(
                           progress: progress.clamp(0.0, 1.0),
-                          foreground: colorScheme.primary,
+                          foreground: _phaseColor(snapshot.phase),
                           background: Colors.white12,
                           strokeWidth: 12,
                         ),
@@ -338,6 +336,21 @@ class _TimerRunView extends ConsumerWidget {
         return l10n.typeWorkTime;
       case null:
         return '';
+    }
+  }
+
+  Color _phaseColor(TimerPhase? phase) {
+    switch (phase) {
+      case TimerPhase.prep:
+        return const Color(0xFFFFB300);
+      case TimerPhase.work:
+        return const Color(0xFFFF5252);
+      case TimerPhase.rest:
+        return const Color(0xFF4CAF50);
+      case TimerPhase.cooldown:
+        return const Color(0xFF26C6DA);
+      case null:
+        return const Color(0xFFFF5252);
     }
   }
 }
