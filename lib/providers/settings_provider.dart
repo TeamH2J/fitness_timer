@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../models/app_settings.dart';
 import '../services/preferences_service.dart';
@@ -79,4 +80,12 @@ class LastRoutineIdNotifier extends StateNotifier<String?> {
 final lastRoutineIdProvider =
     StateNotifierProvider<LastRoutineIdNotifier, String?>((ref) {
   return LastRoutineIdNotifier(PreferencesService.instance);
+});
+
+// ---------------------------------------------------------------------------
+// packageInfoProvider — memoised app version info
+// ---------------------------------------------------------------------------
+
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) {
+  return PackageInfo.fromPlatform();
 });

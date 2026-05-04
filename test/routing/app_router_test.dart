@@ -7,10 +7,12 @@ import 'package:fitness_timer/pages/home_page.dart';
 import 'package:fitness_timer/pages/routine_edit_page.dart';
 import 'package:fitness_timer/pages/timer_run_page.dart';
 import 'package:fitness_timer/providers/database_provider.dart';
+import 'package:fitness_timer/services/preferences_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_database_service.dart';
 
@@ -90,6 +92,11 @@ FakeDatabaseService makeFakeDb() => FakeDatabaseService(
     );
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await PreferencesService.init();
+  });
+
   testWidgets('T7.1 — / resolves to HomePage', (tester) async {
     final router = buildAppRouter();
     await tester.pumpWidget(buildRouterApp(makeFakeDb(), router));

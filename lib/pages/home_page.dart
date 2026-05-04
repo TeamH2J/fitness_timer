@@ -141,9 +141,9 @@ class _RoutineCard extends ConsumerWidget {
           ],
         ),
         onTap: () {
-                ref.read(lastRoutineIdProvider.notifier).set(routine.id);
-                ref.read(tabIndexProvider.notifier).state = 1;
-              },
+          ref.read(lastRoutineIdProvider.notifier).set(routine.id);
+          ref.read(tabIndexProvider.notifier).state = 1;
+        },
       ),
     );
   }

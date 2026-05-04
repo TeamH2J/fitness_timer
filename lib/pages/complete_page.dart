@@ -60,12 +60,8 @@ class _CompletePageState extends ConsumerState<CompletePage> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    // Force a fresh TimerRunPage by cycling lastRoutineIdProvider.
-                    final id = widget.routineId;
-                    ref.read(lastRoutineIdProvider.notifier).clear();
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref.read(lastRoutineIdProvider.notifier).set(id);
-                    });
+                    // Keep last routine id current, then navigate to a fresh run.
+                    ref.read(lastRoutineIdProvider.notifier).set(widget.routineId);
                     context.replace('/routine/${widget.routineId}/run');
                   },
                   icon: const Icon(Icons.replay),
@@ -74,12 +70,10 @@ class _CompletePageState extends ConsumerState<CompletePage> {
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
                   onPressed: () {
-                    // Cycle lastRoutineIdProvider so the timer tab gets a fresh engine.
-                    final id = widget.routineId;
-                    ref.read(lastRoutineIdProvider.notifier).clear();
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref.read(lastRoutineIdProvider.notifier).set(id);
-                    });
+                    // Keep last routine id current for the timer tab, then go
+                    // home landing on the Routines tab (index 0).
+                    ref.read(lastRoutineIdProvider.notifier).set(widget.routineId);
+                    ref.read(tabIndexProvider.notifier).state = 0;
                     context.go('/');
                   },
                   icon: const Icon(Icons.home),

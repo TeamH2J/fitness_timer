@@ -15,14 +15,8 @@ import '../providers/timer_engine_provider.dart';
 import '../services/timer/timer_event.dart';
 import '../services/timer/timer_state.dart';
 import '../theme/fixed_text_styles.dart';
+import '../utils/format_time.dart';
 import '../widgets/circular_progress_painter.dart';
-
-String _formatTime(int totalSeconds, String displayFormat) {
-  if (displayFormat == 'seconds') return '$totalSeconds';
-  final m = totalSeconds ~/ 60;
-  final s = totalSeconds % 60;
-  return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-}
 
 /// FutureProvider that loads [Routine] + its [ExerciseItem] list.
 final _routineDataProvider = FutureProvider.autoDispose
@@ -272,7 +266,7 @@ class _TimerRunView extends ConsumerWidget {
                         ),
                         child: Center(
                           child: Text(
-                            _formatTime(remainingSeconds, displayFormat),
+                            formatTime(remainingSeconds, displayFormat),
                             style: FixedTextStyles.largeNumber,
                             textScaler: TextScaler.noScaling,
                           ),

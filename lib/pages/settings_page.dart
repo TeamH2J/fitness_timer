@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/settings_provider.dart';
@@ -13,6 +12,7 @@ class SettingsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
+    final packageInfoAsync = ref.watch(packageInfoProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabSettings)),
@@ -99,19 +99,15 @@ class SettingsPage extends ConsumerWidget {
           // Section 4 — App Info
           // -----------------------------------------------------------------
           _SectionHeader(title: l10n.settingsAppInfo),
-          FutureBuilder<PackageInfo>(
-            future: PackageInfo.fromPlatform(),
-            builder: (context, snapshot) {
-              final version = snapshot.hasData
-                  ? '${snapshot.data!.version}+${snapshot.data!.buildNumber}'
-                  : snapshot.hasError
-                      ? '–'
-                      : '…';
-              return ListTile(
-                title: Text(l10n.settingsVersion),
-                trailing: Text(version),
-              );
-            },
+          ListTile(
+            title: Text(l10n.settingsVersion),
+            trailing: Text(
+              packageInfoAsync.when(
+                data: (info) => '${info.version}+${info.buildNumber}',
+                loading: () => '…',
+                error: (e, s) => '–',
+              ),
+            ),
           ),
         ],
       ),

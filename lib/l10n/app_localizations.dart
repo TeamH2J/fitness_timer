@@ -302,23 +302,112 @@ abstract class AppLocalizations {
   /// **'Page not found.'**
   String get pageNotFound;
 
+  /// No description provided for @tabRoutines.
+  ///
+  /// In en, this message translates to:
+  /// **'Routines'**
   String get tabRoutines;
+
+  /// No description provided for @tabTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer'**
   String get tabTimer;
+
+  /// No description provided for @tabSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
   String get tabSettings;
+
+  /// No description provided for @timerTabPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a routine from the Routines tab'**
   String get timerTabPlaceholder;
+
+  /// No description provided for @goToRoutines.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Routines'**
   String get goToRoutines;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
   String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
   String get settingsLanguageSystem;
+
+  /// No description provided for @settingsLanguageKorean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
   String get settingsLanguageKorean;
+
+  /// No description provided for @settingsLanguageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
   String get settingsLanguageEnglish;
+
+  /// No description provided for @settingsSoundHaptic.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound / Haptic'**
   String get settingsSoundHaptic;
+
+  /// No description provided for @settingsTts.
+  ///
+  /// In en, this message translates to:
+  /// **'TTS'**
   String get settingsTts;
+
+  /// No description provided for @settingsBeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Beep'**
   String get settingsBeep;
+
+  /// No description provided for @settingsHaptic.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic'**
   String get settingsHaptic;
+
+  /// No description provided for @settingsDisplayFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Format'**
   String get settingsDisplayFormat;
+
+  /// No description provided for @settingsFormatMmss.
+  ///
+  /// In en, this message translates to:
+  /// **'MM:SS'**
   String get settingsFormatMmss;
+
+  /// No description provided for @settingsFormatSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds'**
   String get settingsFormatSeconds;
+
+  /// No description provided for @settingsAppInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'App Info'**
   String get settingsAppInfo;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
   String get settingsVersion;
 }
 

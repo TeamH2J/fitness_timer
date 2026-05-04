@@ -1,15 +1,5 @@
+import 'package:fitness_timer/utils/format_time.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-// Import the file that contains _formatTime as a top-level function.
-// Since it's in lib/pages/timer_run_page.dart, we expose it through the library.
-// We replicate the function here so it's directly testable without importing
-// a widget file (which would require a full Flutter environment).
-String formatTime(int totalSeconds, String displayFormat) {
-  if (displayFormat == 'seconds') return '$totalSeconds';
-  final m = totalSeconds ~/ 60;
-  final s = totalSeconds % 60;
-  return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-}
 
 void main() {
   group('formatTime', () {
