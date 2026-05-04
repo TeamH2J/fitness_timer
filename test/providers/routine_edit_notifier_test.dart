@@ -62,6 +62,11 @@ void main() {
       expect(notifier.state.items.first.type, ExerciseType.WORK_TIME);
     });
 
+    test('addItem default has restSeconds == 30', () {
+      notifier.addItem();
+      expect(notifier.state.items.first.restSeconds, 30);
+    });
+
     test('addItem appends successive items in order', () {
       notifier.addItem();
       notifier.addItem();

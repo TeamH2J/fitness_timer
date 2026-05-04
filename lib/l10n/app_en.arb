@@ -30,6 +30,8 @@
   "exerciseName": "Name",
   "duration": "Duration (s)",
   "targetReps": "Reps",
+  "itemRestDuration": "Rest (s)",
+  "restNone": "No rest",
   "retry": "Retry",
   "pageNotFound": "Page not found."
 }

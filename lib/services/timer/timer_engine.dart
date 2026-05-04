@@ -141,14 +141,21 @@ class TimerEngine {
 
     for (var cycle = 1; cycle <= _routine.totalCycles; cycle++) {
       for (final item in sortedItems) {
-        final phase =
-            item.type == ExerciseType.REST ? TimerPhase.rest : TimerPhase.work;
+        final isLegacyRest = item.type == ExerciseType.REST;
         queue.add(_QueueEntry(
-          phase: phase,
+          phase: isLegacyRest ? TimerPhase.rest : TimerPhase.work,
           durationMs: max(0, item.duration * 1000),
           item: item,
           cycleIndex: cycle,
         ));
+        if (!isLegacyRest && item.restSeconds > 0) {
+          queue.add(_QueueEntry(
+            phase: TimerPhase.rest,
+            durationMs: item.restSeconds * 1000,
+            item: item,
+            cycleIndex: cycle,
+          ));
+        }
       }
     }
 
@@ -173,7 +180,8 @@ class TimerEngine {
     _safeAddEvent(PhaseStarted(
       phase: entry.phase,
       item: entry.item,
-      targetReps: entry.item?.type == ExerciseType.WORK_REPS
+      targetReps: entry.phase == TimerPhase.work &&
+              entry.item?.type == ExerciseType.WORK_REPS
           ? entry.item?.targetReps
           : null,
     ));
@@ -226,9 +234,6 @@ class TimerEngine {
 
   void _emitSnapshot(int remainingMs) {
     final entry = _currentEntry;
-    final nextEntry = (_queueIndex + 1 < _queue.length)
-        ? _queue[_queueIndex + 1]
-        : null;
 
     _current = TimerSnapshot(
       state: _state,
@@ -237,12 +242,24 @@ class TimerEngine {
       currentCycle: entry?.cycleIndex ?? 0,
       remainingMs: remainingMs,
       totalMs: entry?.durationMs ?? 0,
-      nextItem: nextEntry?.item,
-      targetReps: entry?.item?.type == ExerciseType.WORK_REPS
+      nextItem: _findNextWorkItem(),
+      targetReps: entry?.phase == TimerPhase.work &&
+              entry?.item?.type == ExerciseType.WORK_REPS
           ? entry?.item?.targetReps
           : null,
     );
     _safeAddSnapshot(_current);
+  }
+
+  /// Returns the item of the next work phase after the current queue index,
+  /// skipping the trailing rest of the current item so the "Next" label
+  /// shows the upcoming exercise rather than echoing the current one.
+  ExerciseItem? _findNextWorkItem() {
+    for (var i = _queueIndex + 1; i < _queue.length; i++) {
+      final entry = _queue[i];
+      if (entry.phase == TimerPhase.work) return entry.item;
+    }
+    return null;
   }
 
   void _safeAddSnapshot(TimerSnapshot snapshot) {

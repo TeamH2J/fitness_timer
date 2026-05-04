@@ -250,6 +250,7 @@ class _ExerciseItemRowState extends State<_ExerciseItemRow> {
   late final TextEditingController _nameController;
   late final TextEditingController _durationController;
   late final TextEditingController _repsController;
+  late final TextEditingController _restController;
 
   @override
   void initState() {
@@ -259,6 +260,8 @@ class _ExerciseItemRowState extends State<_ExerciseItemRow> {
         TextEditingController(text: widget.item.duration.toString());
     _repsController =
         TextEditingController(text: widget.item.targetReps?.toString() ?? '');
+    _restController =
+        TextEditingController(text: widget.item.restSeconds.toString());
   }
 
   @override
@@ -266,6 +269,7 @@ class _ExerciseItemRowState extends State<_ExerciseItemRow> {
     _nameController.dispose();
     _durationController.dispose();
     _repsController.dispose();
+    _restController.dispose();
     super.dispose();
   }
 
@@ -323,10 +327,6 @@ class _ExerciseItemRowState extends State<_ExerciseItemRow> {
                       value: ExerciseType.WORK_REPS,
                       child: Text(l10n.typeWorkReps),
                     ),
-                    DropdownMenuItem(
-                      value: ExerciseType.REST,
-                      child: Text(l10n.typeRest),
-                    ),
                   ],
                 ),
                 // Delete
@@ -337,46 +337,69 @@ class _ExerciseItemRowState extends State<_ExerciseItemRow> {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                const SizedBox(width: 48), // align under name field
-                // Duration field
-                SizedBox(
-                  width: 100,
-                  child: TextField(
-                    controller: _durationController,
-                    decoration: InputDecoration(
-                      labelText: l10n.duration,
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (v) {
-                      final d = int.tryParse(v) ?? 0;
-                      widget.onUpdate(item.copyWith(duration: d));
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Reps field — only for WORK_REPS
-                if (item.type == ExerciseType.WORK_REPS)
+            Padding(
+              padding: const EdgeInsets.only(left: 48), // align under name field
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  // Duration field
                   SizedBox(
-                    width: 80,
+                    width: 100,
                     child: TextField(
-                      controller: _repsController,
+                      controller: _durationController,
                       decoration: InputDecoration(
-                        labelText: l10n.targetReps,
+                        labelText: l10n.duration,
                         border: const OutlineInputBorder(),
                         isDense: true,
                       ),
                       keyboardType: TextInputType.number,
                       onChanged: (v) {
-                        final r = int.tryParse(v);
-                        widget.onUpdate(item.copyWith(targetReps: r));
+                        final d = int.tryParse(v) ?? 0;
+                        widget.onUpdate(item.copyWith(duration: d));
                       },
                     ),
                   ),
-              ],
+                  // Rest seconds field — always visible (0 = no trailing rest)
+                  SizedBox(
+                    width: 100,
+                    child: TextField(
+                      controller: _restController,
+                      decoration: InputDecoration(
+                        labelText: l10n.itemRestDuration,
+                        border: const OutlineInputBorder(),
+                        isDense: true,
+                        helperText:
+                            item.restSeconds == 0 ? l10n.restNone : null,
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (v) {
+                        final r = int.tryParse(v) ?? 0;
+                        widget.onUpdate(item.copyWith(restSeconds: r));
+                      },
+                    ),
+                  ),
+                  // Reps field — only for WORK_REPS
+                  if (item.type == ExerciseType.WORK_REPS)
+                    SizedBox(
+                      width: 80,
+                      child: TextField(
+                        controller: _repsController,
+                        decoration: InputDecoration(
+                          labelText: l10n.targetReps,
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (v) {
+                          final r = int.tryParse(v);
+                          widget.onUpdate(item.copyWith(targetReps: r));
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),

@@ -20,6 +20,7 @@ class ExerciseItem {
   final int duration;
   final int? targetReps;
   final String name;
+  final int restSeconds;
 
   const ExerciseItem({
     required this.id,
@@ -29,6 +30,7 @@ class ExerciseItem {
     required this.duration,
     this.targetReps,
     required this.name,
+    this.restSeconds = 0,
   });
 
   factory ExerciseItem.fromMap(Map<String, dynamic> map) {
@@ -40,6 +42,7 @@ class ExerciseItem {
       duration: map['duration'] as int,
       targetReps: map['target_reps'] as int?,
       name: map['name'] as String,
+      restSeconds: (map['rest_seconds'] as int?) ?? 0,
     );
   }
 
@@ -52,6 +55,7 @@ class ExerciseItem {
       'duration': duration,
       'target_reps': targetReps,
       'name': name,
+      'rest_seconds': restSeconds,
     };
   }
 
@@ -63,6 +67,7 @@ class ExerciseItem {
     int? duration,
     int? targetReps,
     String? name,
+    int? restSeconds,
   }) {
     return ExerciseItem(
       id: id ?? this.id,
@@ -72,6 +77,7 @@ class ExerciseItem {
       duration: duration ?? this.duration,
       targetReps: targetReps ?? this.targetReps,
       name: name ?? this.name,
+      restSeconds: restSeconds ?? this.restSeconds,
     );
   }
 }
