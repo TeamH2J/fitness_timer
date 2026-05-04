@@ -21,6 +21,7 @@ dependencies:
 
   # Local DB
   sqflite: ^2.3.3
+  sqflite_common_ffi: ^2.3.0
   path_provider: ^2.1.4
   path: ^1.9.0
   uuid: ^4.5.0
@@ -41,15 +42,13 @@ dependencies:
   # Routing
   go_router: ^14.6.0
 
-  # Notifications & foreground service
-  flutter_local_notifications: ^17.2.2
+  # Foreground service
   flutter_foreground_task: ^8.10.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  sqflite_common_ffi: ^2.3.0
   fake_async: ^1.3.1
 
 flutter:

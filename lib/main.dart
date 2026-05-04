@@ -6,9 +6,11 @@ import 'providers/feedback_provider.dart';
 import 'providers/os_provider.dart';
 import 'routing/app_router.dart';
 import 'theme/app_theme.dart';
+import 'utils/desktop_db_init.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  initDesktopDb();
 
   // Initialize FlutterForegroundTask options at boot (Android foreground service).
   // Failures are silent — timer still works without background service.
