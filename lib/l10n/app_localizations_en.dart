@@ -99,6 +99,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetReps => 'Reps';
 
   @override
+  String get itemRestDuration => 'Rest (s)';
+
+  @override
+  String get restNone => 'No rest';
+
+  @override
   String get retry => 'Retry';
 
   @override

@@ -41,6 +41,7 @@ void main() {
         type: ExerciseType.WORK_TIME,
         duration: 40,
         name: 'Push-ups',
+        restSeconds: 15,
       ),
       ExerciseItem(
         id: uuid.v4(),
@@ -78,6 +79,7 @@ void main() {
       expect(fetchedItems[i].name, items[i].name);
       expect(fetchedItems[i].type, items[i].type);
       expect(fetchedItems[i].duration, items[i].duration);
+      expect(fetchedItems[i].restSeconds, items[i].restSeconds);
     }
   });
 
@@ -291,6 +293,7 @@ void main() {
           duration: 20,
           targetReps: 12,
           name: 'Dips',
+          restSeconds: 15,
         );
         final e2 = ExerciseItem.fromMap(eWithReps.toMap());
         expect(e2.id, eWithReps.id);
@@ -300,6 +303,7 @@ void main() {
         expect(e2.duration, eWithReps.duration);
         expect(e2.targetReps, 12);
         expect(e2.name, eWithReps.name);
+        expect(e2.restSeconds, 15);
 
         final eNoReps = ExerciseItem(
           id: uuid.v4(),
@@ -311,8 +315,24 @@ void main() {
         );
         final e3 = ExerciseItem.fromMap(eNoReps.toMap());
         expect(e3.targetReps, isNull);
+        expect(e3.restSeconds, 0);
       },
     );
+
+    test('ExerciseItem.fromMap defaults restSeconds to 0 when key missing', () {
+      final map = {
+        'id': 'x',
+        'routine_id': 'r',
+        'order_index': 0,
+        'type': 'WORK_TIME',
+        'duration': 10,
+        'target_reps': null,
+        'name': 'Legacy',
+        // intentionally no rest_seconds
+      };
+      final e = ExerciseItem.fromMap(map);
+      expect(e.restSeconds, 0);
+    });
 
     test('History round-trip preserves id, routineId, and completedAt', () {
       final h = History(

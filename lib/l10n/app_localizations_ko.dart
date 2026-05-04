@@ -99,6 +99,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get targetReps => '목표 횟수';
 
   @override
+  String get itemRestDuration => '휴식 (초)';
+
+  @override
+  String get restNone => '휴식 없음';
+
+  @override
   String get retry => '다시 시도';
 
   @override

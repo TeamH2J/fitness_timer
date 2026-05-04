@@ -105,6 +105,7 @@ class RoutineEditNotifier extends StateNotifier<RoutineEditState> {
       type: ExerciseType.WORK_TIME,
       duration: 30,
       name: '',
+      restSeconds: 30,
     );
     state = state.copyWith(items: [...state.items, newItem]);
   }

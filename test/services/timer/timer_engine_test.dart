@@ -450,6 +450,179 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  // T9 — restSeconds embedded in work item creates trailing rest phase
+  // -------------------------------------------------------------------------
+
+  group('T9 — Embedded restSeconds', () {
+    test(
+        'work item with restSeconds=5 → PhaseStarted: work then rest, both with same item',
+        () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final item = ExerciseItem(
+          id: 'w1',
+          routineId: 'r1',
+          orderIndex: 0,
+          type: ExerciseType.WORK_TIME,
+          duration: 10,
+          restSeconds: 5,
+          name: 'Push-up',
+        );
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [item],
+          clock: clock,
+        );
+
+        final events = <TimerEvent>[];
+        engine.snapshots.listen((_) {});
+        engine.events.listen(events.add);
+
+        engine.start();
+        async.flushMicrotasks();
+
+        // Advance through work(10) + rest(5)
+        advance(async, clock, const Duration(seconds: 10));
+        advance(async, clock, const Duration(seconds: 5));
+
+        final started = events.whereType<PhaseStarted>().toList();
+        expect(started.length, 2);
+        expect(started[0].phase, TimerPhase.work);
+        expect(started[0].item?.id, 'w1');
+        expect(started[1].phase, TimerPhase.rest);
+        expect(started[1].item?.id, 'w1');
+
+        engine.dispose();
+      });
+    });
+
+    test('work item with restSeconds=0 → only work phase, no rest entry', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [_workItem(duration: 5)],
+          clock: clock,
+        );
+
+        final events = <TimerEvent>[];
+        engine.snapshots.listen((_) {});
+        engine.events.listen(events.add);
+
+        engine.start();
+        async.flushMicrotasks();
+
+        advance(async, clock, const Duration(seconds: 5));
+
+        final started = events.whereType<PhaseStarted>().toList();
+        expect(started.length, 1);
+        expect(started[0].phase, TimerPhase.work);
+
+        engine.dispose();
+      });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // T10 — nextItem skips trailing rest of current item
+  // -------------------------------------------------------------------------
+
+  group('T10 — nextItem skips trailing rest', () {
+    test(
+        'two work items A(rest=5) + B; while in A.work, snapshot.nextItem == B',
+        () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final a = ExerciseItem(
+          id: 'a',
+          routineId: 'r1',
+          orderIndex: 0,
+          type: ExerciseType.WORK_TIME,
+          duration: 10,
+          restSeconds: 5,
+          name: 'Push-up',
+        );
+        final b = ExerciseItem(
+          id: 'b',
+          routineId: 'r1',
+          orderIndex: 1,
+          type: ExerciseType.WORK_TIME,
+          duration: 8,
+          name: 'Squat',
+        );
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [a, b],
+          clock: clock,
+        );
+
+        TimerSnapshot? lastSnapshot;
+        engine.snapshots.listen((s) => lastSnapshot = s);
+
+        engine.start();
+        async.flushMicrotasks();
+
+        // Mid-way through A's work phase
+        advance(async, clock, const Duration(seconds: 3));
+
+        expect(lastSnapshot, isNotNull);
+        expect(lastSnapshot!.phase, TimerPhase.work);
+        expect(lastSnapshot!.currentItem?.id, 'a');
+        expect(lastSnapshot!.nextItem?.id, 'b'); // not 'a's rest
+
+        engine.dispose();
+      });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // T11 — rest phase suppresses targetReps
+  // -------------------------------------------------------------------------
+
+  group('T11 — rest phase suppresses targetReps', () {
+    test(
+        'WORK_REPS item with restSeconds=5 → during rest, snapshot.targetReps is null',
+        () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final item = ExerciseItem(
+          id: 'reps',
+          routineId: 'r1',
+          orderIndex: 0,
+          type: ExerciseType.WORK_REPS,
+          duration: 10,
+          targetReps: 12,
+          restSeconds: 5,
+          name: 'Pull-up',
+        );
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [item],
+          clock: clock,
+        );
+
+        TimerSnapshot? lastSnapshot;
+        engine.snapshots.listen((s) => lastSnapshot = s);
+
+        engine.start();
+        async.flushMicrotasks();
+
+        // During work phase: targetReps == 12
+        advance(async, clock, const Duration(seconds: 3));
+        expect(lastSnapshot!.phase, TimerPhase.work);
+        expect(lastSnapshot!.targetReps, 12);
+
+        // Cross into rest phase
+        advance(async, clock, const Duration(seconds: 8));
+        expect(lastSnapshot!.phase, TimerPhase.rest);
+        expect(lastSnapshot!.targetReps, isNull);
+
+        engine.dispose();
+      });
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Additional: Empty queue completes immediately
   // -------------------------------------------------------------------------
 

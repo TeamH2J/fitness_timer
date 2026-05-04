@@ -21,6 +21,16 @@ class DatabaseService {
     return _database!;
   }
 
+  /// Closes the underlying SQLite connection. Tests use this to release
+  /// file handles before deleting temporary database files.
+  Future<void> close() async {
+    final db = _database;
+    if (db != null) {
+      await db.close();
+      _database = null;
+    }
+  }
+
   Future<Database> _initDb() async {
     final String path;
     if (_dbPath != null) {
@@ -32,9 +42,10 @@ class DatabaseService {
     }
     return openDatabase(
       path,
-      version: 1,
+      version: 2,
       onConfigure: _onConfigure,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -62,6 +73,7 @@ class DatabaseService {
         duration INTEGER NOT NULL DEFAULT 0,
         target_reps INTEGER,
         name TEXT NOT NULL,
+        rest_seconds INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (routine_id) REFERENCES routines(id) ON DELETE CASCADE
       )
     ''');
@@ -82,6 +94,84 @@ class DatabaseService {
     await db.execute(
       'CREATE INDEX idx_histories_routine_id ON histories(routine_id)',
     );
+  }
+
+  /// v1 → v2: add `rest_seconds` column and absorb REST rows into the
+  /// preceding work item. REST rows at the start of a routine (no preceding
+  /// work) get folded into the routine's `prep_time`, clamped to 60s.
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.transaction((txn) async {
+        await txn.execute(
+          'ALTER TABLE exercise_items ADD COLUMN rest_seconds INTEGER NOT NULL DEFAULT 0',
+        );
+
+        final routineRows = await txn.rawQuery(
+          'SELECT id, prep_time FROM routines',
+        );
+
+        for (final routineRow in routineRows) {
+          final routineId = routineRow['id'] as String;
+          var prepTime = routineRow['prep_time'] as int;
+
+          final itemRows = await txn.rawQuery(
+            'SELECT id, order_index, type, duration FROM exercise_items '
+            'WHERE routine_id = ? ORDER BY order_index ASC',
+            [routineId],
+          );
+
+          String? lastWorkId;
+          var leadingRestSum = 0;
+          final restIdsToDelete = <String>[];
+
+          for (final row in itemRows) {
+            final id = row['id'] as String;
+            final type = row['type'] as String;
+            final duration = row['duration'] as int;
+
+            if (type == 'REST') {
+              if (lastWorkId != null) {
+                await txn.rawUpdate(
+                  'UPDATE exercise_items SET rest_seconds = rest_seconds + ? WHERE id = ?',
+                  [duration, lastWorkId],
+                );
+              } else {
+                leadingRestSum += duration;
+              }
+              restIdsToDelete.add(id);
+            } else {
+              lastWorkId = id;
+            }
+          }
+
+          if (leadingRestSum > 0) {
+            final newPrep = (prepTime + leadingRestSum).clamp(0, 60);
+            await txn.rawUpdate(
+              'UPDATE routines SET prep_time = ? WHERE id = ?',
+              [newPrep, routineId],
+            );
+            prepTime = newPrep;
+          }
+
+          for (final id in restIdsToDelete) {
+            await txn.rawDelete('DELETE FROM exercise_items WHERE id = ?', [
+              id,
+            ]);
+          }
+
+          final remaining = await txn.rawQuery(
+            'SELECT id FROM exercise_items WHERE routine_id = ? ORDER BY order_index ASC',
+            [routineId],
+          );
+          for (var i = 0; i < remaining.length; i++) {
+            await txn.rawUpdate(
+              'UPDATE exercise_items SET order_index = ? WHERE id = ?',
+              [i, remaining[i]['id']],
+            );
+          }
+        }
+      });
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -149,8 +239,8 @@ class DatabaseService {
         await txn.rawInsert(
           '''
           INSERT INTO exercise_items
-            (id, routine_id, order_index, type, duration, target_reps, name)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+            (id, routine_id, order_index, type, duration, target_reps, name, rest_seconds)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           ''',
           [
             map['id'],
@@ -160,6 +250,7 @@ class DatabaseService {
             map['duration'],
             map['target_reps'],
             map['name'],
+            map['rest_seconds'],
           ],
         );
       }

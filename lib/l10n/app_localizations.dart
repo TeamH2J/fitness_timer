@@ -278,6 +278,18 @@ abstract class AppLocalizations {
   /// **'Reps'**
   String get targetReps;
 
+  /// No description provided for @itemRestDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest (s)'**
+  String get itemRestDuration;
+
+  /// No description provided for @restNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No rest'**
+  String get restNone;
+
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:
