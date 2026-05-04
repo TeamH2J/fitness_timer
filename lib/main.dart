@@ -33,6 +33,11 @@ Future<void> main() async {
     final container = ProviderContainer();
     await container.read(audioSessionConfiguratorProvider).configure();
 
+    // Seed initial tab based on last-used routine (cold-start only; runs once).
+    final initialTab =
+        PreferencesService.instance.lastRoutineId != null ? 1 : 0;
+    container.read(tabIndexProvider.notifier).state = initialTab;
+
     // Register app lifecycle observer so Phase 5 UI can react to background/foreground.
     try {
       final lifecycle = container.read(appLifecycleObserverProvider);

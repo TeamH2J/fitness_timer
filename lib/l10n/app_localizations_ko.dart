@@ -163,4 +163,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsVersion => '버전';
+
+  @override
+  String get tapToStart => '탭 하여 시작';
 }
