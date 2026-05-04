@@ -265,10 +265,18 @@ class _TimerRunView extends ConsumerWidget {
                           strokeWidth: 12,
                         ),
                         child: Center(
-                          child: Text(
-                            formatTime(remainingSeconds, displayFormat),
-                            style: FixedTextStyles.largeNumber,
-                            textScaler: TextScaler.noScaling,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                formatTime(remainingSeconds, displayFormat),
+                                style: FixedTextStyles.largeNumber,
+                                textScaler: TextScaler.noScaling,
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                            ),
                           ),
                         ),
                       ),
