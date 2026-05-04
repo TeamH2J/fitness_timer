@@ -193,21 +193,35 @@ class _TimerRunView extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Cycle indicator
-                Text(
-                  '${l10n.cycle} ${snapshot.currentCycle} / ${routineData.routine.totalCycles}',
-                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                SizedBox(
+                  height: 22,
+                  child: Center(
+                    child: Text(
+                      '${l10n.cycle} ${snapshot.currentCycle} / ${routineData.routine.totalCycles}',
+                      style: const TextStyle(color: Colors.white70, fontSize: 16),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
 
                 // Current exercise name
-                Text(
-                  _phaseName(snapshot, l10n),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                SizedBox(
+                  height: 32,
+                  child: Center(
+                    child: Text(
+                      _phaseName(snapshot, l10n),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
 
@@ -247,37 +261,50 @@ class _TimerRunView extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 // Reps target (WORK_REPS mode)
-                if (snapshot.targetReps != null)
-                  Text(
-                    '${snapshot.targetReps} ${l10n.repsTarget}',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 20,
-                    ),
-                  ),
+                SizedBox(
+                  height: 28,
+                  child: snapshot.targetReps != null
+                      ? Center(
+                          child: Text(
+                            '${snapshot.targetReps} ${l10n.repsTarget}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 20,
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
 
                 const SizedBox(height: 24),
 
                 // Next item preview — show "Rest" when the immediately next phase
                 // is rest, otherwise show the upcoming exercise's name.
-                if (snapshot.nextPhase == TimerPhase.rest)
-                  Text(
-                    '${l10n.next}: ${l10n.typeRest}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 14),
-                  )
-                else if (snapshot.nextItem != null)
-                  Text(
-                    '${l10n.next}: ${snapshot.nextItem!.name}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                SizedBox(
+                  height: 20,
+                  child: Center(
+                    child: Text(
+                      snapshot.nextPhase == TimerPhase.rest
+                          ? '${l10n.next}: ${l10n.typeRest}'
+                          : snapshot.nextItem != null
+                              ? '${l10n.next}: ${snapshot.nextItem!.name}'
+                              : '',
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
                   ),
+                ),
 
                 // Pause indicator
-                if (snapshot.state == TimerState.paused)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Icon(Icons.pause_circle_outline,
-                        color: Colors.white54, size: 32),
-                  ),
+                SizedBox(
+                  height: 48,
+                  child: snapshot.state == TimerState.paused
+                      ? const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Icon(Icons.pause_circle_outline,
+                              color: Colors.white54, size: 32),
+                        )
+                      : null,
+                ),
               ],
             ),
           ),
