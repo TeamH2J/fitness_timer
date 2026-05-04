@@ -569,6 +569,51 @@ void main() {
         expect(lastSnapshot!.phase, TimerPhase.work);
         expect(lastSnapshot!.currentItem?.id, 'a');
         expect(lastSnapshot!.nextItem?.id, 'b'); // not 'a's rest
+        expect(lastSnapshot!.nextPhase, TimerPhase.rest); // immediate next is a's rest
+
+        engine.dispose();
+      });
+    });
+
+    test('during rest phase between A and B, nextPhase == work', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final a = ExerciseItem(
+          id: 'a',
+          routineId: 'r1',
+          orderIndex: 0,
+          type: ExerciseType.WORK_TIME,
+          duration: 10,
+          restSeconds: 5,
+          name: 'Push-up',
+        );
+        final b = ExerciseItem(
+          id: 'b',
+          routineId: 'r1',
+          orderIndex: 1,
+          type: ExerciseType.WORK_TIME,
+          duration: 8,
+          name: 'Squat',
+        );
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [a, b],
+          clock: clock,
+        );
+
+        TimerSnapshot? lastSnapshot;
+        engine.snapshots.listen((s) => lastSnapshot = s);
+
+        engine.start();
+        async.flushMicrotasks();
+
+        // Advance past A's work (10s) into A's rest phase
+        advance(async, clock, const Duration(seconds: 12));
+
+        expect(lastSnapshot, isNotNull);
+        expect(lastSnapshot!.phase, TimerPhase.rest);
+        expect(lastSnapshot!.nextPhase, TimerPhase.work);
+        expect(lastSnapshot!.nextItem?.id, 'b');
 
         engine.dispose();
       });
