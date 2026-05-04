@@ -34,10 +34,15 @@ class TimerRunPage extends ConsumerStatefulWidget {
   /// When true, the X-button navigates to the Routines tab instead of context.go('/').
   final bool embedded;
 
+  /// When true, the engine starts automatically after the routine loads.
+  /// Set to false for standby (Tab 1) entry — user must tap to begin.
+  final bool autoStart;
+
   const TimerRunPage({
     super.key,
     required this.routineId,
     this.embedded = false,
+    this.autoStart = true,
   });
 
   @override
@@ -127,9 +132,13 @@ class _TimerRunPageState extends ConsumerState<TimerRunPage>
       }
     });
 
-    // Start the engine.
+    // Start or preview the engine depending on entry path.
     try {
-      notifier.start();
+      if (widget.autoStart) {
+        notifier.start();
+      } else {
+        notifier.preview();
+      }
     } catch (_) {
       // Already started — guard in case of hot reload.
     }
@@ -318,6 +327,23 @@ class _TimerRunView extends ConsumerWidget {
                       style: const TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                   ),
+                ),
+
+                // Tap to start hint (standby mode only)
+                SizedBox(
+                  height: 20,
+                  child: snapshot.state == TimerState.idle &&
+                          snapshot.currentItem != null
+                      ? Center(
+                          child: Text(
+                            l10n.tapToStart,
+                            style: const TextStyle(
+                              color: Colors.white38,
+                              fontSize: 13,
+                            ),
+                          ),
+                        )
+                      : null,
                 ),
 
                 // Pause indicator
