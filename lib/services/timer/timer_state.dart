@@ -12,6 +12,7 @@ class TimerSnapshot {
   final int remainingMs;
   final int totalMs;
   final ExerciseItem? nextItem;
+  final TimerPhase? nextPhase;
   final int? targetReps;
 
   const TimerSnapshot({
@@ -22,6 +23,7 @@ class TimerSnapshot {
     this.remainingMs = 0,
     this.totalMs = 0,
     this.nextItem,
+    this.nextPhase,
     this.targetReps,
   });
 
@@ -40,10 +42,12 @@ class TimerSnapshot {
     int? remainingMs,
     int? totalMs,
     ExerciseItem? nextItem,
+    TimerPhase? nextPhase,
     int? targetReps,
     bool clearPhase = false,
     bool clearCurrentItem = false,
     bool clearNextItem = false,
+    bool clearNextPhase = false,
     bool clearTargetReps = false,
   }) {
     return TimerSnapshot(
@@ -54,6 +58,7 @@ class TimerSnapshot {
       remainingMs: remainingMs ?? this.remainingMs,
       totalMs: totalMs ?? this.totalMs,
       nextItem: clearNextItem ? null : (nextItem ?? this.nextItem),
+      nextPhase: clearNextPhase ? null : (nextPhase ?? this.nextPhase),
       targetReps: clearTargetReps ? null : (targetReps ?? this.targetReps),
     );
   }

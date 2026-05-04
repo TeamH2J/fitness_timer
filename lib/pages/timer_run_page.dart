@@ -258,8 +258,14 @@ class _TimerRunView extends ConsumerWidget {
 
                 const SizedBox(height: 24),
 
-                // Next item preview
-                if (snapshot.nextItem != null)
+                // Next item preview — show "Rest" when the immediately next phase
+                // is rest, otherwise show the upcoming exercise's name.
+                if (snapshot.nextPhase == TimerPhase.rest)
+                  Text(
+                    '${l10n.next}: ${l10n.typeRest}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  )
+                else if (snapshot.nextItem != null)
                   Text(
                     '${l10n.next}: ${snapshot.nextItem!.name}',
                     style: const TextStyle(color: Colors.grey, fontSize: 14),

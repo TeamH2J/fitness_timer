@@ -243,6 +243,7 @@ class TimerEngine {
       remainingMs: remainingMs,
       totalMs: entry?.durationMs ?? 0,
       nextItem: _findNextWorkItem(),
+      nextPhase: _peekNextPhase(),
       targetReps: entry?.phase == TimerPhase.work &&
               entry?.item?.type == ExerciseType.WORK_REPS
           ? entry?.item?.targetReps
@@ -259,6 +260,12 @@ class TimerEngine {
       final entry = _queue[i];
       if (entry.phase == TimerPhase.work) return entry.item;
     }
+    return null;
+  }
+
+  TimerPhase? _peekNextPhase() {
+    final next = _queueIndex + 1;
+    if (next < _queue.length) return _queue[next].phase;
     return null;
   }
 
