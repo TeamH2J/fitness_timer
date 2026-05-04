@@ -91,11 +91,29 @@ class TimerEngine {
     _startTicker();
   }
 
+  void preview() {
+    if (_state != TimerState.idle) return;
+
+    _queue = _buildPhaseQueue();
+    _queueIndex = 0;
+
+    if (_queue.isEmpty) return;
+
+    _currentEntry = _queue[0];
+    _currentPhase = _queue[0].phase;
+    _remainingAtPause = _queue[0].durationMs;
+
+    _emitSnapshot(_queue[0].durationMs);
+  }
+
   void togglePlayPause() {
     if (_state == TimerState.running) {
       pause();
     } else if (_state == TimerState.paused) {
       resume();
+    } else if (_state == TimerState.idle && _currentEntry != null) {
+      _state = TimerState.running;
+      _enterPhase(_currentEntry!);
     }
   }
 
