@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
 import '../pages/complete_page.dart';
 import '../pages/history_page.dart';
-import '../pages/home_page.dart';
+import '../pages/main_scaffold.dart';
 import '../pages/routine_edit_page.dart';
 import '../pages/timer_run_page.dart';
 
@@ -21,7 +21,7 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomePage(),
+      builder: (context, state) => const MainScaffold(),
     ),
     GoRoute(
       path: '/history',

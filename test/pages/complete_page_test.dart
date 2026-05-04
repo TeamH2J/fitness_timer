@@ -1,10 +1,12 @@
 import 'package:fitness_timer/l10n/app_localizations.dart';
 import 'package:fitness_timer/pages/complete_page.dart';
 import 'package:fitness_timer/providers/database_provider.dart';
+import 'package:fitness_timer/services/preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_database_service.dart';
 
@@ -41,6 +43,11 @@ Widget buildCompletePage(FakeDatabaseService fakeDb, {String routineId = 'r1'}) 
 }
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await PreferencesService.init();
+  });
+
   group('T4 — CompletePage', () {
     testWidgets('T4.1 on build: insertHistory called exactly once',
         (tester) async {

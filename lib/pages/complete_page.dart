@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/database_provider.dart';
+import '../providers/settings_provider.dart';
 
 class CompletePage extends ConsumerStatefulWidget {
   final String routineId;
@@ -58,14 +59,23 @@ class _CompletePageState extends ConsumerState<CompletePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () =>
-                      context.replace('/routine/${widget.routineId}/run'),
+                  onPressed: () {
+                    // Keep last routine id current, then navigate to a fresh run.
+                    ref.read(lastRoutineIdProvider.notifier).set(widget.routineId);
+                    context.replace('/routine/${widget.routineId}/run');
+                  },
                   icon: const Icon(Icons.replay),
                   label: Text(l10n.repeatRoutine),
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
-                  onPressed: () => context.go('/'),
+                  onPressed: () {
+                    // Keep last routine id current for the timer tab, then go
+                    // home landing on the Routines tab (index 0).
+                    ref.read(lastRoutineIdProvider.notifier).set(widget.routineId);
+                    ref.read(tabIndexProvider.notifier).state = 0;
+                    context.go('/');
+                  },
                   icon: const Icon(Icons.home),
                   label: Text(l10n.goHome),
                 ),

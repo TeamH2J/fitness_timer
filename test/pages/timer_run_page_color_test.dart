@@ -28,12 +28,14 @@ import 'package:fitness_timer/services/os/notification_throttler.dart';
 import 'package:fitness_timer/services/os/platform_info.dart' show FakePlatformInfo;
 import 'package:fitness_timer/services/os/timer_os_bridge.dart';
 import 'package:fitness_timer/services/os/wakelock_manager.dart';
+import 'package:fitness_timer/services/preferences_service.dart';
 import 'package:fitness_timer/services/timer/timer_state.dart';
 import 'package:fitness_timer/widgets/circular_progress_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_database_service.dart';
 
@@ -200,6 +202,11 @@ Future<CircularProgressPainter> _getPainter(
 // Tests
 // ---------------------------------------------------------------------------
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await PreferencesService.init();
+  });
+
   group('T6 — _phaseColor: ring foreground tint per phase', () {
     testWidgets('T6.1 prep phase → amber Color(0xFFFFB300)', (tester) async {
       final painter = await _getPainter(

@@ -42,6 +42,12 @@ dependencies:
   # Routing
   go_router: ^14.6.0
 
+  # Settings persistence
+  shared_preferences: ^2.3.0
+
+  # App version
+  package_info_plus: ^8.0.0
+
   # Foreground service
   flutter_foreground_task: ^8.10.0
 
