@@ -322,12 +322,14 @@ class _TimerRunView extends ConsumerWidget {
   }
 
   String _phaseName(TimerSnapshot snapshot, AppLocalizations l10n) {
-    if (snapshot.currentItem != null) {
-      return snapshot.currentItem!.name.isEmpty
-          ? _phaseLabel(snapshot.phase, l10n)
-          : snapshot.currentItem!.name;
+    final item = snapshot.currentItem;
+    if (item == null || item.name.isEmpty) {
+      return _phaseLabel(snapshot.phase, l10n);
     }
-    return _phaseLabel(snapshot.phase, l10n);
+    if (snapshot.phase == TimerPhase.rest) {
+      return '${item.name}(${l10n.typeRest})';
+    }
+    return item.name;
   }
 
   String _phaseLabel(TimerPhase? phase, AppLocalizations l10n) {
