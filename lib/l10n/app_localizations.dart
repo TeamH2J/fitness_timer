@@ -301,6 +301,25 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page not found.'**
   String get pageNotFound;
+
+  String get tabRoutines;
+  String get tabTimer;
+  String get tabSettings;
+  String get timerTabPlaceholder;
+  String get goToRoutines;
+  String get settingsLanguage;
+  String get settingsLanguageSystem;
+  String get settingsLanguageKorean;
+  String get settingsLanguageEnglish;
+  String get settingsSoundHaptic;
+  String get settingsTts;
+  String get settingsBeep;
+  String get settingsHaptic;
+  String get settingsDisplayFormat;
+  String get settingsFormatMmss;
+  String get settingsFormatSeconds;
+  String get settingsAppInfo;
+  String get settingsVersion;
 }
 
 class _AppLocalizationsDelegate

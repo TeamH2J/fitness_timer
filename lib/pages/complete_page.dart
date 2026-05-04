@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/database_provider.dart';
+import '../providers/settings_provider.dart';
 
 class CompletePage extends ConsumerStatefulWidget {
   final String routineId;
@@ -58,14 +59,29 @@ class _CompletePageState extends ConsumerState<CompletePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () =>
-                      context.replace('/routine/${widget.routineId}/run'),
+                  onPressed: () {
+                    // Force a fresh TimerRunPage by cycling lastRoutineIdProvider.
+                    final id = widget.routineId;
+                    ref.read(lastRoutineIdProvider.notifier).clear();
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      ref.read(lastRoutineIdProvider.notifier).set(id);
+                    });
+                    context.replace('/routine/${widget.routineId}/run');
+                  },
                   icon: const Icon(Icons.replay),
                   label: Text(l10n.repeatRoutine),
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
-                  onPressed: () => context.go('/'),
+                  onPressed: () {
+                    // Cycle lastRoutineIdProvider so the timer tab gets a fresh engine.
+                    final id = widget.routineId;
+                    ref.read(lastRoutineIdProvider.notifier).clear();
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      ref.read(lastRoutineIdProvider.notifier).set(id);
+                    });
+                    context.go('/');
+                  },
                   icon: const Icon(Icons.home),
                   label: Text(l10n.goHome),
                 ),

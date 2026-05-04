@@ -6,6 +6,7 @@ import '../services/feedback/audio_session_configurator.dart';
 import '../services/feedback/feedback_controller.dart';
 import '../services/feedback/haptic_service.dart';
 import '../services/feedback/tts_service.dart';
+import 'settings_provider.dart';
 
 final ttsServiceProvider = Provider<TtsService>((ref) {
   final service = TtsService();
@@ -28,17 +29,26 @@ final audioSessionConfiguratorProvider =
   return AudioSessionConfigurator();
 });
 
-final feedbackPreferencesProvider =
-    StateProvider<FeedbackPreferences>((ref) => const FeedbackPreferences());
+/// Derived from [settingsProvider] so live settings changes propagate immediately.
+final feedbackPreferencesProvider = Provider<FeedbackPreferences>((ref) {
+  final s = ref.watch(settingsProvider);
+  return FeedbackPreferences(
+    tts: s.tts,
+    beep: s.beep,
+    haptic: s.haptic,
+    language: s.localeCode == 'en' ? 'en-US' : 'ko-KR',
+  );
+});
 
 final feedbackControllerProvider =
     Provider.autoDispose<FeedbackController>((ref) {
+  final prefs = ref.watch(feedbackPreferencesProvider);
   final controller = FeedbackController(
     tts: ref.read(ttsServiceProvider),
     audio: ref.read(audioFeedbackServiceProvider),
     haptic: ref.read(hapticServiceProvider),
     session: ref.read(audioSessionConfiguratorProvider),
-    prefs: ref.read(feedbackPreferencesProvider),
+    prefs: prefs,
   );
   ref.onDispose(controller.detach);
   return controller;

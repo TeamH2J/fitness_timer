@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../models/routine.dart';
 import '../providers/database_provider.dart';
 import '../providers/home_provider.dart';
+import '../providers/settings_provider.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -139,7 +140,10 @@ class _RoutineCard extends ConsumerWidget {
             PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
           ],
         ),
-        onTap: () => context.push('/routine/${routine.id}/run'),
+        onTap: () {
+                ref.read(lastRoutineIdProvider.notifier).set(routine.id);
+                ref.read(tabIndexProvider.notifier).state = 1;
+              },
       ),
     );
   }

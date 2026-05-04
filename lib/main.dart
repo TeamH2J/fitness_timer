@@ -4,13 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/feedback_provider.dart';
 import 'providers/os_provider.dart';
+import 'providers/settings_provider.dart';
 import 'routing/app_router.dart';
+import 'services/preferences_service.dart';
 import 'theme/app_theme.dart';
 import 'utils/desktop_db_init.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initDesktopDb();
+
+  // Load persisted user preferences before runApp.
+  try {
+    await PreferencesService.init();
+  } catch (_) {
+    // Silent fallback — default AppSettings used for this session.
+  }
 
   // Initialize FlutterForegroundTask options at boot (Android foreground service).
   // Failures are silent — timer still works without background service.
@@ -40,15 +49,17 @@ Future<void> main() async {
   }
 }
 
-class FitnessTimerApp extends StatelessWidget {
+class FitnessTimerApp extends ConsumerWidget {
   const FitnessTimerApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(settingsProvider.select((s) => s.locale));
     return MaterialApp.router(
       title: 'fitness_timer',
       theme: AppTheme.dark,
       themeMode: ThemeMode.dark,
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: appRouter,

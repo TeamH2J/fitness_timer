@@ -109,4 +109,58 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pageNotFound => '페이지를 찾을 수 없습니다.';
+
+  @override
+  String get tabRoutines => '루틴';
+
+  @override
+  String get tabTimer => '타이머';
+
+  @override
+  String get tabSettings => '설정';
+
+  @override
+  String get timerTabPlaceholder => '루틴 탭에서 루틴을 선택하세요';
+
+  @override
+  String get goToRoutines => '루틴으로 이동';
+
+  @override
+  String get settingsLanguage => '언어';
+
+  @override
+  String get settingsLanguageSystem => '시스템';
+
+  @override
+  String get settingsLanguageKorean => '한국어';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsSoundHaptic => '사운드 / 햅틱';
+
+  @override
+  String get settingsTts => 'TTS';
+
+  @override
+  String get settingsBeep => 'Beep';
+
+  @override
+  String get settingsHaptic => '진동';
+
+  @override
+  String get settingsDisplayFormat => '표시 형식';
+
+  @override
+  String get settingsFormatMmss => 'MM:SS';
+
+  @override
+  String get settingsFormatSeconds => '초 단위';
+
+  @override
+  String get settingsAppInfo => '앱 정보';
+
+  @override
+  String get settingsVersion => '버전';
 }

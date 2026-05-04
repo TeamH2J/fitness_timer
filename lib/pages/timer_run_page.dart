@@ -10,11 +10,19 @@ import '../models/routine.dart';
 import '../providers/database_provider.dart';
 import '../providers/feedback_provider.dart';
 import '../providers/os_provider.dart';
+import '../providers/settings_provider.dart';
 import '../providers/timer_engine_provider.dart';
 import '../services/timer/timer_event.dart';
 import '../services/timer/timer_state.dart';
 import '../theme/fixed_text_styles.dart';
 import '../widgets/circular_progress_painter.dart';
+
+String _formatTime(int totalSeconds, String displayFormat) {
+  if (displayFormat == 'seconds') return '$totalSeconds';
+  final m = totalSeconds ~/ 60;
+  final s = totalSeconds % 60;
+  return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+}
 
 /// FutureProvider that loads [Routine] + its [ExerciseItem] list.
 final _routineDataProvider = FutureProvider.autoDispose
@@ -29,7 +37,14 @@ final _routineDataProvider = FutureProvider.autoDispose
 class TimerRunPage extends ConsumerStatefulWidget {
   final String routineId;
 
-  const TimerRunPage({super.key, required this.routineId});
+  /// When true, the X-button navigates to the Routines tab instead of context.go('/').
+  final bool embedded;
+
+  const TimerRunPage({
+    super.key,
+    required this.routineId,
+    this.embedded = false,
+  });
 
   @override
   ConsumerState<TimerRunPage> createState() => _TimerRunPageState();
@@ -91,6 +106,11 @@ class _TimerRunPageState extends ConsumerState<TimerRunPage>
     if (_started || _disposed) return;
     _started = true;
     _routineData = data;
+
+    // Keep last-used updated (covers deep-link entry).
+    try {
+      ref.read(lastRoutineIdProvider.notifier).set(widget.routineId);
+    } catch (_) {}
 
     // Get the engine notifier for this routine.
     final notifier = ref.read(timerEngineProvider(data).notifier);
@@ -155,6 +175,7 @@ class _TimerRunPageState extends ConsumerState<TimerRunPage>
           routineData: data,
           animController: _animController,
           l10n: l10n,
+          embedded: widget.embedded,
         );
       },
     );
@@ -166,18 +187,21 @@ class _TimerRunView extends ConsumerWidget {
   final RoutineWithItems routineData;
   final AnimationController animController;
   final AppLocalizations l10n;
+  final bool embedded;
 
   const _TimerRunView({
     required this.routineId,
     required this.routineData,
     required this.animController,
     required this.l10n,
+    required this.embedded,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final snapshot = ref.watch(timerEngineProvider(routineData));
     final notifier = ref.read(timerEngineProvider(routineData).notifier);
+    final displayFormat = ref.watch(settingsProvider.select((s) => s.displayFormat));
 
     final totalMs = snapshot.totalMs > 0 ? snapshot.totalMs : 1;
     final remainingMs = snapshot.remainingMs;
@@ -248,7 +272,7 @@ class _TimerRunView extends ConsumerWidget {
                         ),
                         child: Center(
                           child: Text(
-                            '$remainingSeconds',
+                            _formatTime(remainingSeconds, displayFormat),
                             style: FixedTextStyles.largeNumber,
                             textScaler: TextScaler.noScaling,
                           ),
@@ -332,7 +356,11 @@ class _TimerRunView extends ConsumerWidget {
                       try {
                         notifier.reset();
                       } catch (_) {}
-                      context.go('/');
+                      if (embedded) {
+                        ref.read(tabIndexProvider.notifier).state = 0;
+                      } else {
+                        context.go('/');
+                      }
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(8),

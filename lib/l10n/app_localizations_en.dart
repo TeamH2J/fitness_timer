@@ -109,4 +109,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pageNotFound => 'Page not found.';
+
+  @override
+  String get tabRoutines => 'Routines';
+
+  @override
+  String get tabTimer => 'Timer';
+
+  @override
+  String get tabSettings => 'Settings';
+
+  @override
+  String get timerTabPlaceholder => 'Select a routine from the Routines tab';
+
+  @override
+  String get goToRoutines => 'Go to Routines';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageSystem => 'System';
+
+  @override
+  String get settingsLanguageKorean => 'Korean';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsSoundHaptic => 'Sound / Haptic';
+
+  @override
+  String get settingsTts => 'TTS';
+
+  @override
+  String get settingsBeep => 'Beep';
+
+  @override
+  String get settingsHaptic => 'Haptic';
+
+  @override
+  String get settingsDisplayFormat => 'Display Format';
+
+  @override
+  String get settingsFormatMmss => 'MM:SS';
+
+  @override
+  String get settingsFormatSeconds => 'Seconds';
+
+  @override
+  String get settingsAppInfo => 'App Info';
+
+  @override
+  String get settingsVersion => 'Version';
 }
