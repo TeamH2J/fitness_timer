@@ -24,17 +24,9 @@ class TimerTabPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final lastId = ref.watch(lastRoutineIdProvider);
-    final currentTabIndex = ref.watch(tabIndexProvider);
 
     if (lastId == null) {
       return _Placeholder(l10n: l10n);
-    }
-
-    // When this tab is not the active tab, render an inert placeholder to avoid
-    // mounting a duplicate TimerRunPage alongside any deep-link push of the same
-    // routine (which would attach two feedbackControllers to the same engine).
-    if (currentTabIndex != 1) {
-      return const SizedBox.shrink();
     }
 
     final routineAsync = ref.watch(_timerTabRoutineProvider(lastId));
