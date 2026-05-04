@@ -51,5 +51,6 @@
   "settingsFormatMmss": "MM:SS",
   "settingsFormatSeconds": "초 단위",
   "settingsAppInfo": "앱 정보",
-  "settingsVersion": "버전"
+  "settingsVersion": "버전",
+  "tapToStart": "탭 하여 시작"
 }
