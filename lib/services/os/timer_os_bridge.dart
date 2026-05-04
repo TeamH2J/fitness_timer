@@ -22,6 +22,11 @@ class TimerOsBridge {
   StreamSubscription<TimerEvent>? _eventSub;
   bool _wakelockActive = false;
 
+  // FR-2 / FR-3 / FR-4 / FR-5 state
+  bool _foregroundServiceStarted = false;
+  String _lastNotificationContent = '';
+  TimerState? _lastSnapshotState;
+
   /// Subscribes to [snapshots] and [events] from a TimerEngine.
   ///
   /// Cancels any prior subscriptions before subscribing, so calling [attach]
@@ -48,7 +53,14 @@ class TimerOsBridge {
       _wakelock.disable();
       _wakelockActive = false;
     }
-    _foregroundService.stop();
+
+    // FR-5: stop only if service was started; then reset all per-cycle state.
+    if (_foregroundServiceStarted) {
+      _foregroundService.stop();
+      _foregroundServiceStarted = false;
+    }
+    _lastSnapshotState = null;
+    _lastNotificationContent = '';
   }
 
   void _onSnapshot(TimerSnapshot snapshot) {
@@ -60,16 +72,48 @@ class TimerOsBridge {
       _wakelockActive = false;
       _wakelock.disable();
     }
+
+    // FR-3: detect running ↔ paused transitions and update notification.
+    final prev = _lastSnapshotState;
+    final current = snapshot.state;
+    _lastSnapshotState = current;
+
+    if (prev == current) return; // same-state tick — no notification spam
+
+    if (_foregroundServiceStarted && _lastNotificationContent.isNotEmpty) {
+      if (prev == TimerState.running && current == TimerState.paused) {
+        _foregroundService.updateNotification(
+          title: 'Fitness Timer',
+          content: 'Paused — $_lastNotificationContent',
+        );
+      } else if (prev == TimerState.paused && current == TimerState.running) {
+        _foregroundService.updateNotification(
+          title: 'Fitness Timer',
+          content: _lastNotificationContent,
+        );
+      }
+    }
   }
 
   void _onEvent(TimerEvent event) {
     if (event is PhaseStarted) {
       final phaseName = event.phase.name;
       final itemName = event.item?.name ?? phaseName;
-      _foregroundService.updateNotification(
-        title: 'Fitness Timer',
-        content: '$itemName — $phaseName',
-      );
+      final content = '$itemName — $phaseName';
+
+      // FR-4: cache content for pause/resume notification.
+      _lastNotificationContent = content;
+
+      // FR-2: first PhaseStarted → start(); subsequent ones → updateNotification().
+      if (!_foregroundServiceStarted) {
+        _foregroundServiceStarted = true;
+        _foregroundService.start(title: 'Fitness Timer', content: content);
+      } else {
+        _foregroundService.updateNotification(
+          title: 'Fitness Timer',
+          content: content,
+        );
+      }
     } else if (event is RoutineCompleted) {
       _foregroundService.updateNotification(
         title: 'Fitness Timer',
