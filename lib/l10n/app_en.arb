@@ -51,5 +51,6 @@
   "settingsFormatMmss": "MM:SS",
   "settingsFormatSeconds": "Seconds",
   "settingsAppInfo": "App Info",
-  "settingsVersion": "Version"
+  "settingsVersion": "Version",
+  "tapToStart": "Tap to start"
 }

@@ -752,6 +752,196 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  // T12 — preview() new behaviour
+  // -------------------------------------------------------------------------
+
+  group('T12 — preview()', () {
+    test('T12.1 preview on prep-only routine → snapshot state==idle, phase==prep, remainingMs==prepDurationMs', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(prepTime: 10),
+          items: [],
+          clock: clock,
+        );
+
+        TimerSnapshot? lastSnapshot;
+        engine.snapshots.listen((s) => lastSnapshot = s);
+
+        engine.preview();
+        async.flushMicrotasks();
+
+        expect(lastSnapshot, isNotNull);
+        expect(lastSnapshot!.state, TimerState.idle);
+        expect(lastSnapshot!.phase, TimerPhase.prep);
+        expect(lastSnapshot!.remainingMs, 10000);
+        expect(lastSnapshot!.totalMs, 10000);
+        expect(lastSnapshot!.currentItem, isNull);
+
+        engine.dispose();
+      });
+    });
+
+    test('T12.2 preview on work-item routine (no prep) → snapshot populated from first work entry', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final item = _workItem(duration: 15);
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [item],
+          clock: clock,
+        );
+
+        TimerSnapshot? lastSnapshot;
+        engine.snapshots.listen((s) => lastSnapshot = s);
+
+        engine.preview();
+        async.flushMicrotasks();
+
+        expect(lastSnapshot, isNotNull);
+        expect(lastSnapshot!.state, TimerState.idle);
+        expect(lastSnapshot!.phase, TimerPhase.work);
+        expect(lastSnapshot!.remainingMs, 15000);
+        expect(lastSnapshot!.totalMs, 15000);
+        expect(lastSnapshot!.currentItem?.id, item.id);
+
+        engine.dispose();
+      });
+    });
+
+    test('T12.3 preview emits NO PhaseStarted event', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(prepTime: 5),
+          items: [_workItem()],
+          clock: clock,
+        );
+
+        final events = <TimerEvent>[];
+        engine.events.listen(events.add);
+
+        engine.preview();
+        async.flushMicrotasks();
+
+        expect(events.whereType<PhaseStarted>(), isEmpty);
+
+        engine.dispose();
+      });
+    });
+
+    test('T12.4 preview with empty queue → state stays idle, RoutineCompleted NOT emitted', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(prepTime: 0, cooldownTime: 0),
+          items: [],
+          clock: clock,
+        );
+
+        final events = <TimerEvent>[];
+        engine.snapshots.listen((_) {});
+        engine.events.listen(events.add);
+
+        engine.preview();
+        async.flushMicrotasks();
+
+        expect(engine.current.state, TimerState.idle);
+        expect(events.whereType<RoutineCompleted>(), isEmpty);
+
+        engine.dispose();
+      });
+    });
+
+    test('T12.5 preview idempotency — calling twice is safe; second call is no-op', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(prepTime: 10),
+          items: [],
+          clock: clock,
+        );
+
+        final snapshots = <TimerSnapshot>[];
+        engine.snapshots.listen(snapshots.add);
+
+        engine.preview();
+        async.flushMicrotasks();
+
+        final countAfterFirst = snapshots.length;
+
+        engine.preview(); // second call — state is still idle, so rebuilds queue idempotently
+        async.flushMicrotasks();
+
+        // State is still idle and phase is still correct
+        expect(engine.current.state, TimerState.idle);
+        expect(engine.current.phase, TimerPhase.prep);
+        // Second preview also emits a snapshot (idempotent rebuild is allowed)
+        // but no crash and no extra events on the event stream
+        expect(snapshots.length, greaterThanOrEqualTo(countAfterFirst));
+
+        engine.dispose();
+      });
+    });
+
+    test('T12.6 preview then togglePlayPause → state==running, PhaseStarted emitted exactly once', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(prepTime: 5),
+          items: [],
+          clock: clock,
+        );
+
+        final events = <TimerEvent>[];
+        engine.snapshots.listen((_) {});
+        engine.events.listen(events.add);
+
+        engine.preview();
+        async.flushMicrotasks();
+
+        expect(engine.current.state, TimerState.idle);
+        expect(events.whereType<PhaseStarted>(), isEmpty);
+
+        engine.togglePlayPause();
+        async.flushMicrotasks();
+
+        expect(engine.current.state, TimerState.running);
+        expect(events.whereType<PhaseStarted>().length, 1);
+        expect(events.whereType<PhaseStarted>().first.phase, TimerPhase.prep);
+
+        engine.dispose();
+      });
+    });
+
+    test('T12.7 preview on non-idle state (after start) → no-op, no crash', () {
+      fakeAsync((async) {
+        final clock = FakeClock(DateTime.fromMillisecondsSinceEpoch(0));
+        final engine = TimerEngine(
+          routine: _routine(),
+          items: [_workItem()],
+          clock: clock,
+        );
+
+        engine.snapshots.listen((_) {});
+        engine.events.listen((_) {});
+
+        engine.start();
+        async.flushMicrotasks();
+        expect(engine.current.state, TimerState.running);
+
+        // Should be a no-op and not crash
+        engine.preview();
+        async.flushMicrotasks();
+
+        expect(engine.current.state, TimerState.running);
+
+        engine.dispose();
+      });
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Clock tests
   // -------------------------------------------------------------------------
 

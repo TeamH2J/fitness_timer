@@ -20,6 +20,8 @@ import 'package:fitness_timer/services/timer/timer_event.dart';
 import 'package:fitness_timer/services/timer/timer_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+// TimerPhase is re-exported via timer_state.dart
+
 void main() {
   group('T5 — TimerEngineNotifier (TimerRunPage backing logic)', () {
     final routine = Routine(
@@ -114,6 +116,56 @@ void main() {
       expect(events.any((e) => e is PhaseStarted), isTrue);
 
       await sub.cancel();
+      notifier.dispose();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // T6 — autoStart parameter branching (TimerEngineNotifier level)
+  // ---------------------------------------------------------------------------
+
+  group('T6 — autoStart parameter (preview vs start)', () {
+    final routine = Routine(
+      id: 'r2',
+      title: 'AutoStart Test',
+      prepTime: 5,
+      cooldownTime: 0,
+      totalCycles: 1,
+    );
+    final item = ExerciseItem(
+      id: 'i2',
+      routineId: 'r2',
+      orderIndex: 0,
+      type: ExerciseType.WORK_TIME,
+      duration: 10,
+      name: 'Squat',
+    );
+
+    RoutineWithItems data() => RoutineWithItems(routine: routine, items: [item]);
+
+    test('T6.1 autoStart:true path — start() → engine.current.state == running', () async {
+      final notifier = TimerEngineNotifier(data());
+      expect(notifier.engine.current.state, TimerState.idle);
+
+      // Simulate _onRoutineLoaded with autoStart: true
+      notifier.start();
+      await Future.microtask(() {});
+
+      expect(notifier.engine.current.state, TimerState.running);
+      notifier.dispose();
+    });
+
+    test('T6.2 autoStart:false path — preview() → engine.current.state == idle, phase populated', () async {
+      final notifier = TimerEngineNotifier(data());
+      expect(notifier.engine.current.state, TimerState.idle);
+
+      // Simulate _onRoutineLoaded with autoStart: false
+      notifier.preview();
+      await Future.microtask(() {});
+
+      expect(notifier.engine.current.state, TimerState.idle);
+      expect(notifier.engine.current.phase, TimerPhase.prep);
+      expect(notifier.engine.current.remainingMs, greaterThan(0));
       notifier.dispose();
     });
   });

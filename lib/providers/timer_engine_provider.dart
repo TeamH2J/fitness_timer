@@ -44,6 +44,7 @@ class TimerEngineNotifier extends StateNotifier<TimerSnapshot> {
   void resume() => _engine.resume();
   void togglePlayPause() => _engine.togglePlayPause();
   void reset() => _engine.reset();
+  void preview() => _engine.preview();
 
   @override
   void dispose() {

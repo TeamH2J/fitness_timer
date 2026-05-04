@@ -46,9 +46,10 @@ class TimerTabPage extends ConsumerWidget {
       error: (e, _) => _Placeholder(l10n: l10n),
       data: (data) {
         if (data == null) {
-          // Routine was deleted — clear the stored id and show placeholder.
+          // Routine was deleted — clear the stored id and redirect to Tab 0.
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ref.read(lastRoutineIdProvider.notifier).clear();
+            ref.read(tabIndexProvider.notifier).state = 0;
           });
           return _Placeholder(l10n: l10n);
         }
@@ -56,6 +57,7 @@ class TimerTabPage extends ConsumerWidget {
           key: ValueKey(lastId),
           routineId: lastId,
           embedded: true,
+          autoStart: false,
         );
       },
     );
