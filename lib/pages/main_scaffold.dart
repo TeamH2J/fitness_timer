@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/settings_provider.dart';
 import 'home_page.dart';
 import 'settings_page.dart';
+import 'stopwatch_page.dart';
 import 'timer_tab_page.dart';
 
 class MainScaffold extends ConsumerWidget {
@@ -21,6 +22,7 @@ class MainScaffold extends ConsumerWidget {
         children: const [
           HomePage(),
           TimerTabPage(),
+          StopwatchPage(),
           SettingsPage(),
         ],
       ),
@@ -39,6 +41,10 @@ class MainScaffold extends ConsumerWidget {
           BottomNavigationBarItem(
             icon: const Icon(Icons.timer),
             label: l10n.tabTimer,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.timer_outlined),
+            label: l10n.tabStopwatch,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings),
