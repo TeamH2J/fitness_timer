@@ -166,4 +166,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tapToStart => '탭 하여 시작';
+
+  @override
+  String get tabStopwatch => '스톱워치';
+
+  @override
+  String get stopwatchStart => '시작';
+
+  @override
+  String get stopwatchStop => '정지';
+
+  @override
+  String get stopwatchLap => '랩';
+
+  @override
+  String get stopwatchReset => '초기화';
+
+  @override
+  String get stopwatchEmptyLaps => '기록된 랩이 없습니다';
+
+  @override
+  String get stopwatchLapLabel => '랩';
+
+  @override
+  String get historyLaps => '랩';
 }
