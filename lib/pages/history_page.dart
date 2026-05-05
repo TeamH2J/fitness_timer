@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
@@ -51,12 +52,17 @@ class _HistoryList extends StatelessWidget {
         } else {
           final totalMs = entry.totalMs ?? 0;
           final lapCount = entry.lapCount ?? 0;
+          final label = entry.label;
+          final elapsedStr = _formatElapsed(totalMs);
           return ListTile(
             leading: const Icon(Icons.timer_outlined),
-            title: Text(_formatElapsed(totalMs)),
+            title: Text(label ?? elapsedStr),
             subtitle: Text(
-              '$dateStr  •  $lapCount ${l10n.historyLaps}',
+              label != null
+                  ? '$elapsedStr  •  $dateStr  •  $lapCount ${l10n.historyLaps}'
+                  : '$dateStr  •  $lapCount ${l10n.historyLaps}',
             ),
+            onTap: () => context.push('/stopwatch/${entry.id}'),
           );
         }
       },

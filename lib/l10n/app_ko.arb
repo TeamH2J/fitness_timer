@@ -60,5 +60,17 @@
   "stopwatchReset": "초기화",
   "stopwatchEmptyLaps": "기록된 랩이 없습니다",
   "stopwatchLapLabel": "랩",
-  "historyLaps": "랩"
+  "historyLaps": "랩",
+  "stopwatchDetailTitle": "세션 상세",
+  "stopwatchLabelHint": "라벨을 추가하면 이전 기록과 비교할 수 있어요…",
+  "stopwatchSaveLabel": "저장",
+  "stopwatchCompareNoLabel": "라벨을 추가하면 이전 기록과 비교할 수 있어요.",
+  "stopwatchAggregateTotal": "총 시간",
+  "stopwatchAggregateAvg": "평균 랩",
+  "stopwatchAggregateFastest": "최고 랩",
+  "stopwatchAggregateSlowest": "최저 랩",
+  "stopwatchPbBadge": "PB",
+  "stopwatchTrendTitle": "추이",
+  "stopwatchLapDiff": "직전 대비",
+  "stopwatchNoPrior": "이 라벨의 첫 세션입니다."
 }

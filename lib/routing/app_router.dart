@@ -6,6 +6,7 @@ import '../pages/complete_page.dart';
 import '../pages/history_page.dart';
 import '../pages/main_scaffold.dart';
 import '../pages/routine_edit_page.dart';
+import '../pages/stopwatch_detail_page.dart';
 import '../pages/timer_run_page.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -51,6 +52,12 @@ final GoRouter appRouter = GoRouter(
         final id = state.pathParameters['id']!;
         return CompletePage(routineId: id);
       },
+    ),
+    GoRoute(
+      path: '/stopwatch/:id',
+      builder: (context, state) => StopwatchDetailPage(
+        sessionId: state.pathParameters['id']!,
+      ),
     ),
   ],
 );

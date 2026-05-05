@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fitness_timer/models/exercise_item.dart';
 import 'package:fitness_timer/models/history.dart';
 import 'package:fitness_timer/models/routine.dart';
@@ -15,6 +17,7 @@ class FakeDatabaseService extends DatabaseService {
   int upsertCallCount = 0;
   int insertHistoryCallCount = 0;
   int deleteCallCount = 0;
+  int updateLabelCallCount = 0;
 
   FakeDatabaseService({
     List<Routine>? routines,
@@ -102,6 +105,49 @@ class FakeDatabaseService extends DatabaseService {
   }
 
   @override
+  Future<StopwatchSession?> getStopwatchSessionById(String id) async {
+    try {
+      return _stopwatchSessions.firstWhere((s) => s.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<StopwatchSession>> getSessionsByLabel(
+    String label, {
+    int? limit,
+  }) async {
+    final filtered = _stopwatchSessions
+        .where((s) => s.label == label)
+        .toList()
+      ..sort((a, b) => b.endedAt.compareTo(a.endedAt));
+    if (limit != null && filtered.length > limit) return filtered.sublist(0, limit);
+    return filtered;
+  }
+
+  @override
+  Future<int?> getPersonalBestForLabel(String label) async {
+    final ms = _stopwatchSessions
+        .where((s) => s.label != null && s.label == label)
+        .map((s) => s.totalMs);
+    if (ms.isEmpty) return null;
+    return ms.reduce(min);
+  }
+
+  @override
+  Future<void> updateStopwatchSessionLabel(
+    String sessionId,
+    String? label,
+  ) async {
+    updateLabelCallCount++;
+    final idx = _stopwatchSessions.indexWhere((s) => s.id == sessionId);
+    if (idx >= 0) {
+      _stopwatchSessions[idx] = _stopwatchSessions[idx].copyWith(label: label);
+    }
+  }
+
+  @override
   Future<List<HistoryEntry>> getMergedHistory({int? limit}) async {
     final entries = <HistoryEntry>[];
     for (final h in _histories) {
@@ -120,6 +166,7 @@ class FakeDatabaseService extends DatabaseService {
         timestamp: s.endedAt,
         totalMs: s.totalMs,
         lapCount: s.laps.length,
+        label: s.label,
       ));
     }
     entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));

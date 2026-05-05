@@ -190,4 +190,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get historyLaps => 'laps';
+
+  @override
+  String get stopwatchDetailTitle => 'Session Detail';
+
+  @override
+  String get stopwatchLabelHint => 'Add a label to compare with history…';
+
+  @override
+  String get stopwatchSaveLabel => 'Save';
+
+  @override
+  String get stopwatchCompareNoLabel =>
+      'Add a label to compare with previous sessions.';
+
+  @override
+  String get stopwatchAggregateTotal => 'Total';
+
+  @override
+  String get stopwatchAggregateAvg => 'Avg Lap';
+
+  @override
+  String get stopwatchAggregateFastest => 'Fastest';
+
+  @override
+  String get stopwatchAggregateSlowest => 'Slowest';
+
+  @override
+  String get stopwatchPbBadge => 'PB';
+
+  @override
+  String get stopwatchTrendTitle => 'Trend';
+
+  @override
+  String get stopwatchLapDiff => 'Δ vs prev';
+
+  @override
+  String get stopwatchNoPrior => 'First session with this label.';
 }

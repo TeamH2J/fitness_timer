@@ -60,5 +60,17 @@
   "stopwatchReset": "Reset",
   "stopwatchEmptyLaps": "No laps recorded",
   "stopwatchLapLabel": "Lap",
-  "historyLaps": "laps"
+  "historyLaps": "laps",
+  "stopwatchDetailTitle": "Session Detail",
+  "stopwatchLabelHint": "Add a label to compare with history…",
+  "stopwatchSaveLabel": "Save",
+  "stopwatchCompareNoLabel": "Add a label to compare with previous sessions.",
+  "stopwatchAggregateTotal": "Total",
+  "stopwatchAggregateAvg": "Avg Lap",
+  "stopwatchAggregateFastest": "Fastest",
+  "stopwatchAggregateSlowest": "Slowest",
+  "stopwatchPbBadge": "PB",
+  "stopwatchTrendTitle": "Trend",
+  "stopwatchLapDiff": "Δ vs prev",
+  "stopwatchNoPrior": "First session with this label."
 }

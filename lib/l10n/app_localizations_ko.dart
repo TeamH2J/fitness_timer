@@ -190,4 +190,40 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get historyLaps => '랩';
+
+  @override
+  String get stopwatchDetailTitle => '세션 상세';
+
+  @override
+  String get stopwatchLabelHint => '라벨을 추가하면 이전 기록과 비교할 수 있어요…';
+
+  @override
+  String get stopwatchSaveLabel => '저장';
+
+  @override
+  String get stopwatchCompareNoLabel => '라벨을 추가하면 이전 기록과 비교할 수 있어요.';
+
+  @override
+  String get stopwatchAggregateTotal => '총 시간';
+
+  @override
+  String get stopwatchAggregateAvg => '평균 랩';
+
+  @override
+  String get stopwatchAggregateFastest => '최고 랩';
+
+  @override
+  String get stopwatchAggregateSlowest => '최저 랩';
+
+  @override
+  String get stopwatchPbBadge => 'PB';
+
+  @override
+  String get stopwatchTrendTitle => '추이';
+
+  @override
+  String get stopwatchLapDiff => '직전 대비';
+
+  @override
+  String get stopwatchNoPrior => '이 라벨의 첫 세션입니다.';
 }
