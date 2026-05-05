@@ -166,4 +166,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tapToStart => 'Tap to start';
+
+  @override
+  String get tabStopwatch => 'Stopwatch';
+
+  @override
+  String get stopwatchStart => 'Start';
+
+  @override
+  String get stopwatchStop => 'Stop';
+
+  @override
+  String get stopwatchLap => 'Lap';
+
+  @override
+  String get stopwatchReset => 'Reset';
+
+  @override
+  String get stopwatchEmptyLaps => 'No laps recorded';
+
+  @override
+  String get stopwatchLapLabel => 'Lap';
+
+  @override
+  String get historyLaps => 'laps';
 }

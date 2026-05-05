@@ -3,12 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/history.dart';
-import '../providers/database_provider.dart';
-
-final _historiesProvider = FutureProvider<List<History>>((ref) async {
-  return ref.watch(databaseServiceProvider).getHistories(limit: 100);
-});
+import '../models/stopwatch_session.dart';
+import '../providers/stopwatch_provider.dart';
 
 class HistoryPage extends ConsumerWidget {
   const HistoryPage({super.key});
@@ -16,48 +12,61 @@ class HistoryPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final historiesAsync = ref.watch(_historiesProvider);
+    final historyAsync = ref.watch(mergedHistoryProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.history)),
-      body: historiesAsync.when(
+      body: historyAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l10n.errorLoadData)),
-        data: (histories) => histories.isEmpty
+        data: (entries) => entries.isEmpty
             ? Center(child: Text(l10n.emptyHistory))
-            : _HistoryList(histories: histories),
+            : _HistoryList(entries: entries, l10n: l10n),
       ),
     );
   }
 }
 
-class _HistoryList extends ConsumerWidget {
-  final List<History> histories;
+class _HistoryList extends StatelessWidget {
+  final List<HistoryEntry> entries;
+  final AppLocalizations l10n;
 
-  const _HistoryList({required this.histories});
+  const _HistoryList({required this.entries, required this.l10n});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.read(databaseServiceProvider);
+  Widget build(BuildContext context) {
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
-
     return ListView.builder(
-      itemCount: histories.length,
+      itemCount: entries.length,
       itemBuilder: (context, index) {
-        final h = histories[index];
-        return FutureBuilder(
-          future: db.getRoutine(h.routineId),
-          builder: (context, snapshot) {
-            final title = snapshot.data?.title ?? h.routineId;
-            final dateStr = dateFormat.format(h.completedAt.toLocal());
-            return ListTile(
-              leading: const Icon(Icons.check_circle_outline),
-              title: Text(title),
-              subtitle: Text(dateStr),
-            );
-          },
-        );
+        final entry = entries[index];
+        final dateStr = dateFormat.format(entry.timestamp.toLocal());
+
+        if (entry.type == HistoryEntryType.interval) {
+          return ListTile(
+            leading: const Icon(Icons.check_circle_outline),
+            title: Text(entry.title ?? entry.id),
+            subtitle: Text(dateStr),
+          );
+        } else {
+          final totalMs = entry.totalMs ?? 0;
+          final lapCount = entry.lapCount ?? 0;
+          return ListTile(
+            leading: const Icon(Icons.timer_outlined),
+            title: Text(_formatElapsed(totalMs)),
+            subtitle: Text(
+              '$dateStr  •  $lapCount ${l10n.historyLaps}',
+            ),
+          );
+        }
       },
     );
+  }
+
+  String _formatElapsed(int ms) {
+    final totalSeconds = ms ~/ 1000;
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 }

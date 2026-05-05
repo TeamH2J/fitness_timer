@@ -52,5 +52,13 @@
   "settingsFormatSeconds": "Seconds",
   "settingsAppInfo": "App Info",
   "settingsVersion": "Version",
-  "tapToStart": "Tap to start"
+  "tapToStart": "Tap to start",
+  "tabStopwatch": "Stopwatch",
+  "stopwatchStart": "Start",
+  "stopwatchStop": "Stop",
+  "stopwatchLap": "Lap",
+  "stopwatchReset": "Reset",
+  "stopwatchEmptyLaps": "No laps recorded",
+  "stopwatchLapLabel": "Lap",
+  "historyLaps": "laps"
 }

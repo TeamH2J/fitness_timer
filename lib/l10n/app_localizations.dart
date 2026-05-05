@@ -415,6 +415,15 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to start'**
   String get tapToStart;
+
+  String get tabStopwatch;
+  String get stopwatchStart;
+  String get stopwatchStop;
+  String get stopwatchLap;
+  String get stopwatchReset;
+  String get stopwatchEmptyLaps;
+  String get stopwatchLapLabel;
+  String get historyLaps;
 }
 
 class _AppLocalizationsDelegate

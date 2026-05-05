@@ -52,5 +52,13 @@
   "settingsFormatSeconds": "초 단위",
   "settingsAppInfo": "앱 정보",
   "settingsVersion": "버전",
-  "tapToStart": "탭 하여 시작"
+  "tapToStart": "탭 하여 시작",
+  "tabStopwatch": "스톱워치",
+  "stopwatchStart": "시작",
+  "stopwatchStop": "정지",
+  "stopwatchLap": "랩",
+  "stopwatchReset": "초기화",
+  "stopwatchEmptyLaps": "기록된 랩이 없습니다",
+  "stopwatchLapLabel": "랩",
+  "historyLaps": "랩"
 }

@@ -1,6 +1,7 @@
 import 'package:fitness_timer/models/exercise_item.dart';
 import 'package:fitness_timer/models/history.dart';
 import 'package:fitness_timer/models/routine.dart';
+import 'package:fitness_timer/models/stopwatch_session.dart';
 import 'package:fitness_timer/services/database_service.dart';
 
 /// Concrete subclass of [DatabaseService] that stores data in memory.
@@ -9,6 +10,7 @@ class FakeDatabaseService extends DatabaseService {
   final List<Routine> _routines;
   final Map<String, List<ExerciseItem>> _items;
   final List<History> _histories;
+  final List<StopwatchSession> _stopwatchSessions;
 
   int upsertCallCount = 0;
   int insertHistoryCallCount = 0;
@@ -18,9 +20,11 @@ class FakeDatabaseService extends DatabaseService {
     List<Routine>? routines,
     Map<String, List<ExerciseItem>>? items,
     List<History>? histories,
+    List<StopwatchSession>? stopwatchSessions,
   })  : _routines = routines ?? [],
         _items = items ?? {},
         _histories = histories ?? [],
+        _stopwatchSessions = stopwatchSessions ?? [],
         super(dbPath: ':memory:'); // not actually used
 
   @override
@@ -80,5 +84,48 @@ class FakeDatabaseService extends DatabaseService {
       return sorted.sublist(0, limit);
     }
     return sorted;
+  }
+
+  @override
+  Future<void> insertStopwatchSession(StopwatchSession session) async {
+    _stopwatchSessions.add(session);
+  }
+
+  @override
+  Future<List<StopwatchSession>> getStopwatchSessions({int? limit}) async {
+    final sorted = List<StopwatchSession>.from(_stopwatchSessions)
+      ..sort((a, b) => b.endedAt.compareTo(a.endedAt));
+    if (limit != null && sorted.length > limit) {
+      return sorted.sublist(0, limit);
+    }
+    return sorted;
+  }
+
+  @override
+  Future<List<HistoryEntry>> getMergedHistory({int? limit}) async {
+    final entries = <HistoryEntry>[];
+    for (final h in _histories) {
+      final routine = _routines.where((r) => r.id == h.routineId).firstOrNull;
+      entries.add(HistoryEntry(
+        id: h.id,
+        type: HistoryEntryType.interval,
+        timestamp: h.completedAt,
+        title: routine?.title ?? h.routineId,
+      ));
+    }
+    for (final s in _stopwatchSessions) {
+      entries.add(HistoryEntry(
+        id: s.id,
+        type: HistoryEntryType.stopwatch,
+        timestamp: s.endedAt,
+        totalMs: s.totalMs,
+        lapCount: s.laps.length,
+      ));
+    }
+    entries.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    if (limit != null && entries.length > limit) {
+      return entries.sublist(0, limit);
+    }
+    return entries;
   }
 }
