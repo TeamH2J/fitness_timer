@@ -94,3 +94,25 @@ final stopwatchEngineProvider =
 final mergedHistoryProvider = FutureProvider<List<HistoryEntry>>((ref) async {
   return ref.watch(databaseServiceProvider).getMergedHistory(limit: 100);
 });
+
+// ---------------------------------------------------------------------------
+// Session detail providers
+// ---------------------------------------------------------------------------
+
+final stopwatchSessionByIdProvider =
+    FutureProvider.autoDispose.family<StopwatchSession?, String>(
+  (ref, sessionId) =>
+      ref.watch(databaseServiceProvider).getStopwatchSessionById(sessionId),
+);
+
+final sessionsByLabelProvider =
+    FutureProvider.autoDispose.family<List<StopwatchSession>, String>(
+  (ref, label) =>
+      ref.watch(databaseServiceProvider).getSessionsByLabel(label, limit: 10),
+);
+
+final personalBestProvider =
+    FutureProvider.autoDispose.family<int?, String>(
+  (ref, label) =>
+      ref.watch(databaseServiceProvider).getPersonalBestForLabel(label),
+);

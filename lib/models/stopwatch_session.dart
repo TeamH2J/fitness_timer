@@ -70,6 +70,7 @@ class StopwatchSession {
   final DateTime endedAt;
   final int totalMs;
   final List<LapRecord> laps;
+  final String? label;
 
   const StopwatchSession({
     required this.id,
@@ -77,6 +78,7 @@ class StopwatchSession {
     required this.endedAt,
     required this.totalMs,
     required this.laps,
+    this.label,
   });
 
   Map<String, Object?> toMap() => {
@@ -84,6 +86,7 @@ class StopwatchSession {
         'started_at': startedAt.toUtc().toIso8601String(),
         'ended_at': endedAt.toUtc().toIso8601String(),
         'total_ms': totalMs,
+        'label': label,
       };
 
   factory StopwatchSession.fromMap(
@@ -96,6 +99,25 @@ class StopwatchSession {
       endedAt: DateTime.parse(map['ended_at'] as String),
       totalMs: map['total_ms'] as int,
       laps: laps,
+      label: map['label'] as String?,
+    );
+  }
+
+  StopwatchSession copyWith({
+    String? id,
+    DateTime? startedAt,
+    DateTime? endedAt,
+    int? totalMs,
+    List<LapRecord>? laps,
+    Object? label = _sentinel,
+  }) {
+    return StopwatchSession(
+      id: id ?? this.id,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
+      totalMs: totalMs ?? this.totalMs,
+      laps: laps ?? this.laps,
+      label: label == _sentinel ? this.label : label as String?,
     );
   }
 
@@ -106,10 +128,11 @@ class StopwatchSession {
       startedAt == other.startedAt &&
       endedAt == other.endedAt &&
       totalMs == other.totalMs &&
+      label == other.label &&
       _listsEqual(laps, other.laps);
 
   @override
-  int get hashCode => Object.hash(id, startedAt, endedAt, totalMs);
+  int get hashCode => Object.hash(id, startedAt, endedAt, totalMs, label);
 
   static bool _listsEqual(List<LapRecord> a, List<LapRecord> b) {
     if (a.length != b.length) return false;
@@ -119,6 +142,8 @@ class StopwatchSession {
     return true;
   }
 }
+
+const Object _sentinel = Object();
 
 /// Unified history entry for the merged history view.
 enum HistoryEntryType { interval, stopwatch }
@@ -130,6 +155,7 @@ class HistoryEntry {
   final String? title;
   final int? totalMs;
   final int? lapCount;
+  final String? label;
 
   const HistoryEntry({
     required this.id,
@@ -138,5 +164,6 @@ class HistoryEntry {
     this.title,
     this.totalMs,
     this.lapCount,
+    this.label,
   });
 }

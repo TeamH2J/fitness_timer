@@ -43,7 +43,7 @@ class DatabaseService {
     }
     return openDatabase(
       path,
-      version: 3,
+      version: 4,
       onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
@@ -105,7 +105,8 @@ class DatabaseService {
         id TEXT PRIMARY KEY,
         started_at TEXT NOT NULL,
         ended_at TEXT NOT NULL,
-        total_ms INTEGER NOT NULL
+        total_ms INTEGER NOT NULL,
+        label TEXT
       )
     ''');
 
@@ -199,6 +200,13 @@ class DatabaseService {
     }
     if (oldVersion < 3) {
       await _createStopwatchTables(db);
+      // _createStopwatchTables already includes label TEXT (v4 schema),
+      // so no ALTER TABLE needed when upgrading from v1 or v2.
+    } else if (oldVersion < 4) {
+      // Upgrade from v3: add label column to existing stopwatch_sessions table.
+      await db.execute(
+        'ALTER TABLE stopwatch_sessions ADD COLUMN label TEXT',
+      );
     }
   }
 
@@ -335,12 +343,13 @@ class DatabaseService {
     await db.transaction((txn) async {
       final sessionMap = session.toMap();
       await txn.rawInsert(
-        'INSERT INTO stopwatch_sessions (id, started_at, ended_at, total_ms) VALUES (?, ?, ?, ?)',
+        'INSERT INTO stopwatch_sessions (id, started_at, ended_at, total_ms, label) VALUES (?, ?, ?, ?, ?)',
         [
           sessionMap['id'],
           sessionMap['started_at'],
           sessionMap['ended_at'],
           sessionMap['total_ms'],
+          sessionMap['label'],
         ],
       );
       for (final lap in session.laps) {
@@ -385,6 +394,75 @@ class DatabaseService {
     return sessions;
   }
 
+  /// Returns a single stopwatch session by id, or null if not found.
+  Future<StopwatchSession?> getStopwatchSessionById(String id) async {
+    final db = await database;
+    final sessionRows = await db.rawQuery(
+      'SELECT * FROM stopwatch_sessions WHERE id = ?',
+      [id],
+    );
+    if (sessionRows.isEmpty) return null;
+    final row = sessionRows.first;
+    final lapRows = await db.rawQuery(
+      'SELECT * FROM stopwatch_laps WHERE session_id = ? ORDER BY lap_number ASC',
+      [id],
+    );
+    final laps = lapRows.map(LapRecord.fromMap).toList();
+    return StopwatchSession.fromMap(row, laps);
+  }
+
+  /// Returns sessions matching [label], ordered by ended_at DESC.
+  Future<List<StopwatchSession>> getSessionsByLabel(
+    String label, {
+    int? limit,
+  }) async {
+    final db = await database;
+    final sql = StringBuffer(
+      'SELECT * FROM stopwatch_sessions WHERE label = ? ORDER BY ended_at DESC',
+    );
+    final args = <Object?>[label];
+    if (limit != null) {
+      sql.write(' LIMIT ?');
+      args.add(limit);
+    }
+    final sessionRows = await db.rawQuery(sql.toString(), args);
+    final sessions = <StopwatchSession>[];
+    for (final row in sessionRows) {
+      final sessionId = row['id'] as String;
+      final lapRows = await db.rawQuery(
+        'SELECT * FROM stopwatch_laps WHERE session_id = ? ORDER BY lap_number ASC',
+        [sessionId],
+      );
+      final laps = lapRows.map(LapRecord.fromMap).toList();
+      sessions.add(StopwatchSession.fromMap(row, laps));
+    }
+    return sessions;
+  }
+
+  /// Returns the minimum total_ms for sessions with the given [label], or null
+  /// if no sessions exist for that label.
+  Future<int?> getPersonalBestForLabel(String label) async {
+    final db = await database;
+    final rows = await db.rawQuery(
+      'SELECT MIN(total_ms) AS pb FROM stopwatch_sessions WHERE label = ? AND label IS NOT NULL',
+      [label],
+    );
+    if (rows.isEmpty) return null;
+    return rows.first['pb'] as int?;
+  }
+
+  /// Updates the label of a single session. Pass null to clear the label.
+  Future<void> updateStopwatchSessionLabel(
+    String sessionId,
+    String? label,
+  ) async {
+    final db = await database;
+    await db.rawUpdate(
+      'UPDATE stopwatch_sessions SET label = ? WHERE id = ?',
+      [label, sessionId],
+    );
+  }
+
   /// Returns a merged list of interval history and stopwatch sessions,
   /// ordered by timestamp DESC.
   Future<List<HistoryEntry>> getMergedHistory({int? limit}) async {
@@ -396,7 +474,8 @@ class DatabaseService {
         h.completed_at AS ts,
         r.title AS title,
         NULL AS total_ms,
-        NULL AS lap_count
+        NULL AS lap_count,
+        NULL AS label
       FROM histories h
       LEFT JOIN routines r ON r.id = h.routine_id
       UNION ALL
@@ -406,7 +485,8 @@ class DatabaseService {
         s.ended_at AS ts,
         NULL AS title,
         s.total_ms AS total_ms,
-        (SELECT COUNT(*) FROM stopwatch_laps l WHERE l.session_id = s.id) AS lap_count
+        (SELECT COUNT(*) FROM stopwatch_laps l WHERE l.session_id = s.id) AS lap_count,
+        s.label AS label
       FROM stopwatch_sessions s
       ORDER BY ts DESC
     ''';
@@ -427,6 +507,7 @@ class DatabaseService {
         title: row['title'] as String?,
         totalMs: row['total_ms'] as int?,
         lapCount: row['lap_count'] as int?,
+        label: row['label'] as String?,
       );
     }).toList();
   }

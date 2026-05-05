@@ -416,14 +416,125 @@ abstract class AppLocalizations {
   /// **'Tap to start'**
   String get tapToStart;
 
+  /// No description provided for @tabStopwatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopwatch'**
   String get tabStopwatch;
+
+  /// No description provided for @stopwatchStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
   String get stopwatchStart;
+
+  /// No description provided for @stopwatchStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
   String get stopwatchStop;
+
+  /// No description provided for @stopwatchLap.
+  ///
+  /// In en, this message translates to:
+  /// **'Lap'**
   String get stopwatchLap;
+
+  /// No description provided for @stopwatchReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
   String get stopwatchReset;
+
+  /// No description provided for @stopwatchEmptyLaps.
+  ///
+  /// In en, this message translates to:
+  /// **'No laps recorded'**
   String get stopwatchEmptyLaps;
+
+  /// No description provided for @stopwatchLapLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lap'**
   String get stopwatchLapLabel;
+
+  /// No description provided for @historyLaps.
+  ///
+  /// In en, this message translates to:
+  /// **'laps'**
   String get historyLaps;
+
+  /// No description provided for @stopwatchDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Detail'**
+  String get stopwatchDetailTitle;
+
+  /// No description provided for @stopwatchLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a label to compare with history…'**
+  String get stopwatchLabelHint;
+
+  /// No description provided for @stopwatchSaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get stopwatchSaveLabel;
+
+  /// No description provided for @stopwatchCompareNoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a label to compare with previous sessions.'**
+  String get stopwatchCompareNoLabel;
+
+  /// No description provided for @stopwatchAggregateTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get stopwatchAggregateTotal;
+
+  /// No description provided for @stopwatchAggregateAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Lap'**
+  String get stopwatchAggregateAvg;
+
+  /// No description provided for @stopwatchAggregateFastest.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest'**
+  String get stopwatchAggregateFastest;
+
+  /// No description provided for @stopwatchAggregateSlowest.
+  ///
+  /// In en, this message translates to:
+  /// **'Slowest'**
+  String get stopwatchAggregateSlowest;
+
+  /// No description provided for @stopwatchPbBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'PB'**
+  String get stopwatchPbBadge;
+
+  /// No description provided for @stopwatchTrendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend'**
+  String get stopwatchTrendTitle;
+
+  /// No description provided for @stopwatchLapDiff.
+  ///
+  /// In en, this message translates to:
+  /// **'Δ vs prev'**
+  String get stopwatchLapDiff;
+
+  /// No description provided for @stopwatchNoPrior.
+  ///
+  /// In en, this message translates to:
+  /// **'First session with this label.'**
+  String get stopwatchNoPrior;
 }
 
 class _AppLocalizationsDelegate

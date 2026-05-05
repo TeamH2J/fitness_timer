@@ -30,7 +30,8 @@ lib/
 │   ├── routine.dart                   # Routine
 │   ├── exercise_item.dart             # ExerciseItem, ExerciseType
 │   ├── history.dart                   # History
-│   └── feedback_preferences.dart      # FeedbackPreferences (비영속)
+│   ├── feedback_preferences.dart      # FeedbackPreferences (비영속)
+│   └── stopwatch_session.dart         # StopwatchSession (+label v4), LapRecord, HistoryEntry (+label), StopwatchSnapshot
 ├── services/
 │   ├── database_service.dart          # DatabaseService (sqflite CRUD)
 │   ├── timer/                         # 타이머 엔진
@@ -63,9 +64,11 @@ lib/
 │   ├── routine_edit_page.dart         # RoutineEditPage
 │   ├── timer_run_page.dart            # TimerRunPage
 │   ├── complete_page.dart             # CompletePage
-│   └── history_page.dart             # HistoryPage
+│   ├── history_page.dart             # HistoryPage (stopwatch tile: onTap + label fallback)
+│   └── stopwatch_detail_page.dart     # StopwatchDetailPage — label editor, PB badge, aggregates, sparkline, lap diff
 ├── widgets/                           # 재사용 가능한 커스텀 위젯
-│   └── circular_progress_painter.dart # CircularProgressPainter
+│   ├── circular_progress_painter.dart # CircularProgressPainter
+│   └── sparkline_painter.dart         # SparklinePainter (CustomPainter, no chart lib)
 ├── routing/                           # go_router 라우팅 설정
 │   └── app_router.dart               # appRouter (GoRouter 싱글턴)
 └── theme/                             # 테마 / 텍스트 스타일
@@ -82,7 +85,8 @@ lib/
 | **Timer Engine** | `lib/services/timer/` | `timer_engine.dart`, `timer_state.dart`, `timer_event.dart`, `clock.dart` | 인터벌 타이머 핵심 로직. 250ms ticker, phase queue 관리, `TimerSnapshot` / `TimerEvent` stream 방출 |
 | **Feedback** | `lib/services/feedback/` | `feedback_controller.dart`, `tts_service.dart`, `audio_feedback_service.dart`, `haptic_service.dart`, `audio_session_configurator.dart` | TTS / beep / haptic 피드백 오케스트레이션. `FeedbackController`가 `TimerEvent` stream을 구독하고 `FeedbackPreferences` 플래그에 따라 각 서비스 호출 |
 | **OS Integration** | `lib/services/os/` | `timer_os_bridge.dart`, `wakelock_manager.dart`, `foreground_service_controller.dart`, `notification_throttler.dart`, `app_lifecycle_observer.dart`, `platform_info.dart` | 화면 켜짐 유지, Android 포그라운드 서비스, 잠금화면 알림, 앱 생명주기 감지 |
-| **DB / Models** | `lib/services/database_service.dart`, `lib/models/` | `database_service.dart`, `routine.dart`, `exercise_item.dart`, `history.dart`, `feedback_preferences.dart` | sqflite 기반 CRUD. 3개 테이블 (`routines`, `exercise_items`, `histories`). FK ON DELETE CASCADE |
+| **DB / Models** | `lib/services/database_service.dart`, `lib/models/` | `database_service.dart`, `routine.dart`, `exercise_item.dart`, `history.dart`, `feedback_preferences.dart`, `stopwatch_session.dart` | sqflite 기반 CRUD. 5개 테이블 (`routines`, `exercise_items`, `histories`, `stopwatch_sessions` v4 +label, `stopwatch_laps`). FK ON DELETE CASCADE |
+| **Stopwatch Detail** | `lib/pages/stopwatch_detail_page.dart`, `lib/widgets/sparkline_painter.dart` | `StopwatchDetailPage`, `SparklinePainter` | 세션 상세: 라벨 편집, PB 배지, 총합 delta, 스파크라인, 랩 diff 테이블. 라벨 그룹 비교 진입점 |
 | **UI** | `lib/pages/`, `lib/widgets/`, `lib/routing/`, `lib/theme/` | 5개 페이지 + `circular_progress_painter.dart` + `app_router.dart` + `app_theme.dart` | ConsumerWidget 기반 화면, go_router 선언형 라우팅, 다크 테마 전용 |
 | **Providers** | `lib/providers/` | 6개 provider 파일 | Riverpod으로 비즈니스 로직 노출. TimerEngine 생명주기 관리 포함 |
 
@@ -182,7 +186,9 @@ Providers (Riverpod)
 | `TimerRunPage` | `lib/pages/timer_run_page.dart` |
 | `CompletePage` | `lib/pages/complete_page.dart` |
 | `HistoryPage` | `lib/pages/history_page.dart` |
+| `StopwatchDetailPage` | `lib/pages/stopwatch_detail_page.dart` |
 | `CircularProgressPainter` | `lib/widgets/circular_progress_painter.dart` |
+| `SparklinePainter` | `lib/widgets/sparkline_painter.dart` |
 | `appRouter` | `lib/routing/app_router.dart` |
 | `AppTheme` | `lib/theme/app_theme.dart` |
 | `FixedTextStyles` | `lib/theme/fixed_text_styles.dart` |
@@ -197,6 +203,14 @@ Providers (Riverpod)
 | `RoutineWithItems` | `lib/providers/timer_engine_provider.dart` |
 | `feedbackControllerProvider` | `lib/providers/feedback_provider.dart` |
 | `osProvider` | `lib/providers/os_provider.dart` |
+| `mergedHistoryProvider` | `lib/providers/stopwatch_provider.dart` |
+| `stopwatchSessionByIdProvider` | `lib/providers/stopwatch_provider.dart` |
+| `sessionsByLabelProvider` | `lib/providers/stopwatch_provider.dart` |
+| `personalBestProvider` | `lib/providers/stopwatch_provider.dart` |
+| `StopwatchSession` | `lib/models/stopwatch_session.dart` |
+| `LapRecord` | `lib/models/stopwatch_session.dart` |
+| `HistoryEntry` | `lib/models/stopwatch_session.dart` |
+| `StopwatchSnapshot` | `lib/models/stopwatch_session.dart` |
 
 ---
 
@@ -207,3 +221,4 @@ Providers (Riverpod)
 - **Surgical change 원칙** (CLAUDE.md §3): 한 PR에서 한 책임만. 무관한 lint/스타일 동시 정리 금지 (별도 PR).
 - **models 직접 수정**: `fromMap` / `toMap` 변경 시 DB 마이그레이션 또는 `onCreate` 수정이 필요할 수 있음.
 - **브랜치 전략**: feature → develop PR. `main`에 직접 push 금지. 상세는 `docs/guidelines/BRANCH_STRATEGY.md` 참조.
+- **DB 버전 이력**: v1 → v2 (exercise_items.rest_seconds 추가), v2 → v3 (stopwatch_sessions + stopwatch_laps 신규), v3 → v4 (stopwatch_sessions.label TEXT 추가). 현재 버전 **v4**.
