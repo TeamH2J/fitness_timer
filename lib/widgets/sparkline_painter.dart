@@ -71,6 +71,14 @@ class SparklinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(SparklinePainter old) =>
-      old.values != values || old.color != color || old.strokeWidth != strokeWidth;
+  bool shouldRepaint(SparklinePainter old) {
+    if (old.color != color || old.strokeWidth != strokeWidth) return true;
+    // Compare by content so that a rebuilt-but-identical list does not cause
+    // an unnecessary repaint (e.g. when build() calls .toList() each frame).
+    if (old.values.length != values.length) return true;
+    for (var i = 0; i < values.length; i++) {
+      if (old.values[i] != values[i]) return true;
+    }
+    return false;
+  }
 }

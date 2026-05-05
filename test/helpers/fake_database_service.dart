@@ -18,6 +18,8 @@ class FakeDatabaseService extends DatabaseService {
   int insertHistoryCallCount = 0;
   int deleteCallCount = 0;
   int updateLabelCallCount = 0;
+  /// The label value most recently passed to [updateStopwatchSessionLabel].
+  String? lastUpdatedLabel = 'NOT_SET'; // sentinel so null is distinguishable
 
   FakeDatabaseService({
     List<Routine>? routines,
@@ -141,6 +143,7 @@ class FakeDatabaseService extends DatabaseService {
     String? label,
   ) async {
     updateLabelCallCount++;
+    lastUpdatedLabel = label;
     final idx = _stopwatchSessions.indexWhere((s) => s.id == sessionId);
     if (idx >= 0) {
       _stopwatchSessions[idx] = _stopwatchSessions[idx].copyWith(label: label);

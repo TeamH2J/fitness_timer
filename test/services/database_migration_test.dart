@@ -360,6 +360,121 @@ void main() {
     expect(sessions, isEmpty);
   });
 
+  // ---------------------------------------------------------------------------
+  // Helper: seed a v2 database (has rest_seconds, no stopwatch tables)
+  // ---------------------------------------------------------------------------
+  Future<String> seedV2() async {
+    final path = tempPath();
+    final db = await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(
+        version: 2,
+        onConfigure: (db) async {
+          await db.execute('PRAGMA foreign_keys = ON');
+        },
+        onCreate: (db, version) async {
+          await db.execute('''
+            CREATE TABLE routines (
+              id TEXT PRIMARY KEY,
+              title TEXT NOT NULL,
+              prep_time INTEGER NOT NULL DEFAULT 0,
+              cooldown_time INTEGER NOT NULL DEFAULT 0,
+              total_cycles INTEGER NOT NULL DEFAULT 1
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE exercise_items (
+              id TEXT PRIMARY KEY,
+              routine_id TEXT NOT NULL,
+              order_index INTEGER NOT NULL,
+              type TEXT NOT NULL CHECK (type IN ('WORK_TIME','WORK_REPS','REST')),
+              duration INTEGER NOT NULL DEFAULT 0,
+              target_reps INTEGER,
+              name TEXT NOT NULL,
+              rest_seconds INTEGER NOT NULL DEFAULT 0,
+              FOREIGN KEY (routine_id) REFERENCES routines(id) ON DELETE CASCADE
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE histories (
+              id TEXT PRIMARY KEY,
+              routine_id TEXT NOT NULL,
+              completed_at TEXT NOT NULL,
+              FOREIGN KEY (routine_id) REFERENCES routines(id) ON DELETE CASCADE
+            )
+          ''');
+        },
+      ),
+    );
+    await db.close();
+    return path;
+  }
+
+  // ---------------------------------------------------------------------------
+  // MIG-V4 from v1: v1 → v4 cumulative upgrade creates stopwatch tables with
+  // label column (via _createStopwatchTables, no ALTER TABLE required).
+  // ---------------------------------------------------------------------------
+  test(
+      'v1 → v4: cumulative upgrade creates stopwatch_sessions with label column',
+      () async {
+    final path = tempPath();
+    final routineId = uuid.v4();
+    // Seed a minimal v1 DB (no stopwatch tables, no rest_seconds column).
+    await seedV1(
+      path: path,
+      routines: [
+        {'id': routineId, 'title': 'r'},
+      ],
+      items: [
+        {
+          'id': 'w1',
+          'routineId': routineId,
+          'orderIndex': 0,
+          'type': 'WORK_TIME',
+          'duration': 30,
+          'name': 'Push-up',
+        },
+      ],
+    );
+
+    // Open via v4 DatabaseService — triggers v1→2, v2→3, v3→4 blocks.
+    final svc = trackedService(path);
+    await svc.getStopwatchSessions();
+
+    final db = await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(readOnly: true),
+    );
+    final cols = await db.rawQuery('PRAGMA table_info(stopwatch_sessions)');
+    await db.close();
+
+    final colNames = cols.map((c) => c['name'] as String).toSet();
+    expect(colNames, containsAll(['id', 'started_at', 'ended_at', 'total_ms', 'label']));
+  });
+
+  // ---------------------------------------------------------------------------
+  // MIG-V4 from v2: v2 → v4 upgrade also creates stopwatch tables with label.
+  // ---------------------------------------------------------------------------
+  test(
+      'v2 → v4: cumulative upgrade creates stopwatch_sessions with label column',
+      () async {
+    final path = await seedV2();
+
+    // Open via v4 DatabaseService — triggers v2→3 and v3→4 blocks.
+    final svc = trackedService(path);
+    await svc.getStopwatchSessions();
+
+    final db = await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(readOnly: true),
+    );
+    final cols = await db.rawQuery('PRAGMA table_info(stopwatch_sessions)');
+    await db.close();
+
+    final colNames = cols.map((c) => c['name'] as String).toSet();
+    expect(colNames, containsAll(['id', 'started_at', 'ended_at', 'total_ms', 'label']));
+  });
+
   test('v1 → v2: multiple consecutive REST rows accumulate into one work item',
       () async {
     final path = tempPath();

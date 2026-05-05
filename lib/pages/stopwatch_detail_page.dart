@@ -7,6 +7,28 @@ import '../providers/database_provider.dart';
 import '../providers/stopwatch_provider.dart';
 import '../widgets/sparkline_painter.dart';
 
+// ---------------------------------------------------------------------------
+// Top-level formatting helpers shared by multiple widgets in this file.
+// ---------------------------------------------------------------------------
+
+/// Formats [ms] as MM:SS (seconds precision).
+String _fmtMmSs(int? ms) {
+  if (ms == null) return '—';
+  final s = ms ~/ 1000;
+  final min = s ~/ 60;
+  final sec = s % 60;
+  return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
+}
+
+/// Formats [ms] as MM:SS.cs (centisecond precision).
+String _fmtMmSsCs(int ms) {
+  final totalCs = ms ~/ 10;
+  final min = totalCs ~/ 6000;
+  final sec = (totalCs % 6000) ~/ 100;
+  final cs = totalCs % 100;
+  return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.${cs.toString().padLeft(2, '0')}';
+}
+
 class StopwatchDetailPage extends ConsumerStatefulWidget {
   const StopwatchDetailPage({super.key, required this.sessionId});
 
@@ -273,7 +295,7 @@ class _AggregatesRow extends StatelessWidget {
           child: Column(
             children: [
               Text(label, style: Theme.of(context).textTheme.labelSmall),
-              Text(_fmtMs(cur)),
+              Text(_fmtMmSs(cur)),
               if (delta != null)
                 Text(
                   _fmtDelta(delta),
@@ -289,20 +311,12 @@ class _AggregatesRow extends StatelessWidget {
     );
   }
 
-  String _fmtMs(int? ms) {
-    if (ms == null) return '—';
-    final s = ms ~/ 1000;
-    final min = s ~/ 60;
-    final sec = s % 60;
-    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
-  }
-
   String _fmtDelta(int delta) {
-    final sign = delta <= 0 ? '' : '+';
+    final sign = delta < 0 ? '-' : (delta > 0 ? '+' : '');
     final abs = delta.abs() ~/ 1000;
     final min = abs ~/ 60;
     final sec = abs % 60;
-    return '$sign${delta <= 0 ? '-' : ''}${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
+    return '$sign${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
   }
 }
 
@@ -317,16 +331,8 @@ class _LapCompareTable extends StatelessWidget {
   final StopwatchSession prior;
   final AppLocalizations l10n;
 
-  String _fmtLap(int ms) {
-    final totalCs = ms ~/ 10;
-    final min = totalCs ~/ 6000;
-    final sec = (totalCs % 6000) ~/ 100;
-    final cs = totalCs % 100;
-    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.${cs.toString().padLeft(2, '0')}';
-  }
-
   String _fmtDelta(int delta) {
-    final sign = delta < 0 ? '-' : '+';
+    final sign = delta < 0 ? '-' : (delta > 0 ? '+' : '');
     final abs = delta.abs();
     final totalCs = abs ~/ 10;
     final min = totalCs ~/ 6000;
@@ -339,8 +345,8 @@ class _LapCompareTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return DataTable(
       columns: [
-        DataColumn(label: Text('#')),
-        DataColumn(label: Text('Lap')),
+        DataColumn(label: const Text('#')),
+        DataColumn(label: Text(l10n.stopwatchLapLabel)),
         DataColumn(label: Text(l10n.stopwatchLapDiff)),
       ],
       rows: current.laps.map((lap) {
@@ -351,14 +357,14 @@ class _LapCompareTable extends StatelessWidget {
 
         return DataRow(cells: [
           DataCell(Text('${lap.number}')),
-          DataCell(Text(_fmtLap(lap.lapMs))),
+          DataCell(Text(_fmtMmSsCs(lap.lapMs))),
           DataCell(
             delta == null
                 ? const Text('—')
                 : Text(
                     _fmtDelta(delta),
                     style: TextStyle(
-                      color: delta <= 0 ? Colors.green : Colors.red,
+                      color: delta < 0 ? Colors.green : Colors.red,
                     ),
                   ),
           ),
@@ -374,14 +380,6 @@ class _LapList extends StatelessWidget {
   final List<LapRecord> laps;
   final AppLocalizations l10n;
 
-  String _fmtLap(int ms) {
-    final totalCs = ms ~/ 10;
-    final min = totalCs ~/ 6000;
-    final sec = (totalCs % 6000) ~/ 100;
-    final cs = totalCs % 100;
-    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.${cs.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context) {
     if (laps.isEmpty) return const SizedBox.shrink();
@@ -390,7 +388,7 @@ class _LapList extends StatelessWidget {
           .map(
             (lap) => ListTile(
               leading: Text('${lap.number}'),
-              title: Text(_fmtLap(lap.lapMs)),
+              title: Text(_fmtMmSsCs(lap.lapMs)),
             ),
           )
           .toList(),

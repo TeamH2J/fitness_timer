@@ -228,8 +228,9 @@ void main() {
       expect(redText.data, startsWith('+'));
     });
 
-    // WGT-7: Save triggers DB update
-    testWidgets('WGT-7: tapping Save calls updateStopwatchSessionLabel',
+    // WGT-7: Save triggers DB update and normalizes label (FR-4.1.3)
+    testWidgets(
+        'WGT-7a: tapping Save with normal text calls updateStopwatchSessionLabel once',
         (tester) async {
       final session = makeSession(id: 's1');
       final fakeDb = FakeDatabaseService(stopwatchSessions: [session]);
@@ -237,12 +238,48 @@ void main() {
       await tester.pumpWidget(buildDetailPage(fakeDb, sessionId: 's1'));
       await tester.pumpAndSettle();
 
-      // Enter a label and tap Save.
       await tester.enterText(find.byType(TextField), 'morning run');
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
       expect(fakeDb.updateLabelCallCount, 1);
+      expect(fakeDb.lastUpdatedLabel, 'morning run');
+    });
+
+    testWidgets(
+        'WGT-7b: whitespace-only label is normalized to null before DB write',
+        (tester) async {
+      final session = makeSession(id: 's1');
+      final fakeDb = FakeDatabaseService(stopwatchSessions: [session]);
+
+      await tester.pumpWidget(buildDetailPage(fakeDb, sessionId: 's1'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '   ');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(fakeDb.updateLabelCallCount, 1);
+      // FR-4.1.3: whitespace-only → stored as null
+      expect(fakeDb.lastUpdatedLabel, isNull);
+    });
+
+    testWidgets(
+        'WGT-7c: label with surrounding whitespace is trimmed before DB write',
+        (tester) async {
+      final session = makeSession(id: 's1');
+      final fakeDb = FakeDatabaseService(stopwatchSessions: [session]);
+
+      await tester.pumpWidget(buildDetailPage(fakeDb, sessionId: 's1'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '  run  ');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(fakeDb.updateLabelCallCount, 1);
+      // FR-4.1.3: surrounding whitespace trimmed
+      expect(fakeDb.lastUpdatedLabel, 'run');
     });
   });
 }
