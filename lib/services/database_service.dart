@@ -389,7 +389,7 @@ class DatabaseService {
   /// ordered by timestamp DESC.
   Future<List<HistoryEntry>> getMergedHistory({int? limit}) async {
     final db = await database;
-    final sql = StringBuffer('''
+    const baseSql = '''
       SELECT
         h.id AS id,
         'interval' AS type,
@@ -409,12 +409,10 @@ class DatabaseService {
         (SELECT COUNT(*) FROM stopwatch_laps l WHERE l.session_id = s.id) AS lap_count
       FROM stopwatch_sessions s
       ORDER BY ts DESC
-    ''');
-    if (limit != null) {
-      sql.write(' LIMIT ?');
-    }
+    ''';
+    final limitClause = limit != null ? ' LIMIT ?' : '';
     final rows = await db.rawQuery(
-      sql.toString(),
+      '$baseSql$limitClause',
       limit != null ? [limit] : null,
     );
     return rows.map((row) {

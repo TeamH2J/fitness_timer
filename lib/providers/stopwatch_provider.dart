@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/stopwatch_session.dart';
@@ -62,8 +63,9 @@ class StopwatchEngineNotifier extends StateNotifier<StopwatchSnapshot> {
     if (session != null) {
       try {
         await _ref.read(databaseServiceProvider).insertStopwatchSession(session);
-      } catch (e) {
+      } catch (e, st) {
         // Session data lost silently — acceptable per OOS-2 scope.
+        debugPrint('StopwatchEngineNotifier: failed to save session: $e\n$st');
       }
     }
   }

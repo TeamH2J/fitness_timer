@@ -5,6 +5,17 @@ import '../l10n/app_localizations.dart';
 import '../models/stopwatch_session.dart';
 import '../providers/stopwatch_provider.dart';
 
+/// Formats [ms] as `mm:ss.cs` (centiseconds).
+String _formatElapsedMs(int ms) {
+  final centiseconds = (ms ~/ 10) % 100;
+  final totalSeconds = ms ~/ 1000;
+  final minutes = totalSeconds ~/ 60;
+  final seconds = totalSeconds % 60;
+  return '${minutes.toString().padLeft(2, '0')}:'
+      '${seconds.toString().padLeft(2, '0')}.'
+      '${centiseconds.toString().padLeft(2, '0')}';
+}
+
 class StopwatchPage extends ConsumerWidget {
   const StopwatchPage({super.key});
 
@@ -40,7 +51,7 @@ class _ElapsedDisplay extends StatelessWidget {
     return Column(
       children: [
         Text(
-          _formatElapsed(snapshot.elapsedMs),
+          _formatElapsedMs(snapshot.elapsedMs),
           style: const TextStyle(
             fontSize: 64,
             fontWeight: FontWeight.w300,
@@ -49,7 +60,7 @@ class _ElapsedDisplay extends StatelessWidget {
         ),
         if (snapshot.state != StopwatchState.idle)
           Text(
-            _formatElapsed(snapshot.currentLapMs),
+            _formatElapsedMs(snapshot.currentLapMs),
             style: const TextStyle(
               fontSize: 24,
               color: Colors.white54,
@@ -58,16 +69,6 @@ class _ElapsedDisplay extends StatelessWidget {
           ),
       ],
     );
-  }
-
-  String _formatElapsed(int ms) {
-    final centiseconds = (ms ~/ 10) % 100;
-    final totalSeconds = ms ~/ 1000;
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:'
-        '${seconds.toString().padLeft(2, '0')}.'
-        '${centiseconds.toString().padLeft(2, '0')}';
   }
 }
 
@@ -191,7 +192,7 @@ class _LapList extends StatelessWidget {
             style: const TextStyle(color: Colors.white70),
           ),
           trailing: Text(
-            _formatLap(lap.lapMs),
+            _formatElapsedMs(lap.lapMs),
             style: const TextStyle(
               fontFeatures: [FontFeature.tabularFigures()],
             ),
@@ -199,15 +200,5 @@ class _LapList extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _formatLap(int ms) {
-    final centiseconds = (ms ~/ 10) % 100;
-    final totalSeconds = ms ~/ 1000;
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:'
-        '${seconds.toString().padLeft(2, '0')}.'
-        '${centiseconds.toString().padLeft(2, '0')}';
   }
 }

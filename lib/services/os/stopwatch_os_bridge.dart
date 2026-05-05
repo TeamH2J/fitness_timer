@@ -65,15 +65,16 @@ class StopwatchOsBridge {
 
     if (running) {
       final elapsedStr = _formatElapsed(snapshot.elapsedMs);
-      _foregroundService.updateNotification(
-        title: 'Fitness Timer',
-        content: 'Stopwatch — $elapsedStr',
-      );
       _lastElapsedContent = elapsedStr;
 
       if (!_foregroundServiceStarted) {
         _foregroundServiceStarted = true;
         _foregroundService.start(
+          title: 'Fitness Timer',
+          content: 'Stopwatch — $elapsedStr',
+        );
+      } else {
+        _foregroundService.updateNotification(
           title: 'Fitness Timer',
           content: 'Stopwatch — $elapsedStr',
         );
