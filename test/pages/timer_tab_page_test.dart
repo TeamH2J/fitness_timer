@@ -1,4 +1,6 @@
 import 'package:fitness_timer/l10n/app_localizations.dart';
+import 'package:fitness_timer/models/exercise_item.dart';
+import 'package:fitness_timer/models/routine.dart';
 import 'package:fitness_timer/pages/timer_tab_page.dart';
 import 'package:fitness_timer/providers/database_provider.dart';
 import 'package:fitness_timer/services/preferences_service.dart';
@@ -25,10 +27,10 @@ GoRouter _buildRouter() => GoRouter(
       ],
     );
 
-Widget _buildApp(GoRouter router) {
+Widget _buildApp(GoRouter router, {FakeDatabaseService? fakeDb}) {
   return ProviderScope(
     overrides: [
-      databaseServiceProvider.overrideWithValue(FakeDatabaseService()),
+      databaseServiceProvider.overrideWithValue(fakeDb ?? FakeDatabaseService()),
     ],
     child: MaterialApp.router(
       routerConfig: router,
@@ -66,6 +68,50 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('timer-history-stub'), findsOneWidget);
+    });
+  });
+
+  group('TimerTabPage — TimerRunPage embedded', () {
+    testWidgets(
+        'T-T3: TimerRunPage embedded view has no history icon',
+        (tester) async {
+      const routineId = 'test-routine-1';
+      final routine = const Routine(
+        id: routineId,
+        title: 'Test Routine',
+        prepTime: 0,
+        cooldownTime: 0,
+        totalCycles: 1,
+      );
+      final item = ExerciseItem(
+        id: 'item-1',
+        routineId: routineId,
+        orderIndex: 0,
+        type: ExerciseType.WORK_TIME,
+        duration: 30,
+        name: 'Push-up',
+      );
+      final fakeDb = FakeDatabaseService(
+        routines: [routine],
+        items: {routineId: [item]},
+      );
+
+      // Seed SharedPreferences with the routine id so lastRoutineIdProvider
+      // initialises to a non-null value.
+      SharedPreferences.setMockInitialValues({'last_routine_id': routineId});
+      await PreferencesService.init();
+
+      final router = _buildRouter();
+      await tester.pumpWidget(_buildApp(router, fakeDb: fakeDb));
+      // Pump once to build, then a second time to let the FutureProvider
+      // (_timerTabRoutineProvider) resolve its async callback.
+      // Cannot use pumpAndSettle because TimerRunPage has a repeating
+      // AnimationController that never settles.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      // TimerRunPage is shown in embedded mode — it has no Icons.history.
+      expect(find.byIcon(Icons.history), findsNothing);
     });
   });
 }
