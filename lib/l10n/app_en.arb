@@ -80,5 +80,12 @@
   "emptyHistoryStopwatch": "No stopwatch sessions yet",
   "emptyHistoryTimer": "No completed routines yet",
   "settingsDataSection": "Data",
-  "settingsViewAllHistory": "View all history"
+  "settingsViewAllHistory": "View all history",
+  "historyDeleted": "Deleted",
+  "historyUndo": "Undo",
+  "settingsDeleteAllHistory": "Delete all history",
+  "deleteAllConfirmTitle": "Delete all history?",
+  "deleteAllConfirmBody": "All routine completion records and stopwatch sessions will be permanently deleted. Routine definitions are kept.",
+  "dialogCancel": "Cancel",
+  "historyAllDeleted": "All history deleted"
 }

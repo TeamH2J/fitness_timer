@@ -251,4 +251,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsViewAllHistory => 'View all history';
+
+  @override
+  String get historyDeleted => 'Deleted';
+
+  @override
+  String get historyUndo => 'Undo';
+
+  @override
+  String get settingsDeleteAllHistory => 'Delete all history';
+
+  @override
+  String get deleteAllConfirmTitle => 'Delete all history?';
+
+  @override
+  String get deleteAllConfirmBody =>
+      'All routine completion records and stopwatch sessions will be permanently deleted. Routine definitions are kept.';
+
+  @override
+  String get dialogCancel => 'Cancel';
+
+  @override
+  String get historyAllDeleted => 'All history deleted';
 }

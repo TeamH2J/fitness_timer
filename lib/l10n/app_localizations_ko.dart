@@ -250,4 +250,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsViewAllHistory => '전체 히스토리 보기';
+
+  @override
+  String get historyDeleted => '삭제됨';
+
+  @override
+  String get historyUndo => '되돌리기';
+
+  @override
+  String get settingsDeleteAllHistory => '전체 히스토리 삭제';
+
+  @override
+  String get deleteAllConfirmTitle => '전체 히스토리를 삭제할까요?';
+
+  @override
+  String get deleteAllConfirmBody =>
+      '모든 루틴 완료 기록과 스톱워치 세션이 영구 삭제됩니다. 루틴 정의는 그대로 유지됩니다.';
+
+  @override
+  String get dialogCancel => '취소';
+
+  @override
+  String get historyAllDeleted => '전체 히스토리가 삭제되었습니다';
 }

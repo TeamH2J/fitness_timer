@@ -439,6 +439,56 @@ class DatabaseService {
     return sessions;
   }
 
+  // ---------------------------------------------------------------------------
+  // History Delete / Re-insert
+  // ---------------------------------------------------------------------------
+
+  /// Deletes the history row with [id]. No-op if the row doesn't exist.
+  Future<void> deleteHistory(String id) async {
+    final db = await database;
+    await db.rawDelete('DELETE FROM histories WHERE id = ?', [id]);
+  }
+
+  /// Returns the history row with [id], or null if it doesn't exist.
+  Future<History?> getHistoryById(String id) async {
+    final db = await database;
+    final rows =
+        await db.rawQuery('SELECT * FROM histories WHERE id = ?', [id]);
+    if (rows.isEmpty) return null;
+    return History.fromMap(rows.first);
+  }
+
+  /// Inserts a [History] using its existing [id] and [completedAt].
+  /// Use this for Undo re-inserts; [insertHistory] generates a new UUID.
+  Future<void> insertHistoryRecord(History h) async {
+    final db = await database;
+    await db.rawInsert(
+      'INSERT INTO histories (id, routine_id, completed_at) VALUES (?, ?, ?)',
+      [h.id, h.routineId, h.completedAt.toIso8601String()],
+    );
+  }
+
+  /// Deletes a stopwatch session by [id].
+  /// FK CASCADE removes all associated [stopwatch_laps] rows.
+  Future<void> deleteStopwatchSession(String id) async {
+    final db = await database;
+    await db.rawDelete(
+      'DELETE FROM stopwatch_sessions WHERE id = ?',
+      [id],
+    );
+  }
+
+  /// Deletes all rows from [histories] and [stopwatch_sessions] in a single
+  /// transaction. Laps are removed via FK CASCADE. Routines are untouched.
+  Future<void> deleteAllHistories() async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.rawDelete('DELETE FROM histories');
+      await txn.rawDelete('DELETE FROM stopwatch_sessions');
+      // stopwatch_laps removed via FK CASCADE
+    });
+  }
+
   /// Returns the minimum total_ms for sessions with the given [label], or null
   /// if no sessions exist for that label.
   Future<int?> getPersonalBestForLabel(String label) async {
