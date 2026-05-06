@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/stopwatch_session.dart';
@@ -26,7 +27,16 @@ class StopwatchPage extends ConsumerWidget {
     final notifier = ref.read(stopwatchEngineProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabStopwatch)),
+      appBar: AppBar(
+        title: Text(l10n.tabStopwatch),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: l10n.historyOpenStopwatch,
+            onPressed: () => context.push('/history/stopwatch'),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           const SizedBox(height: 32),

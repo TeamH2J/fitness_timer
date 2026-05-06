@@ -29,6 +29,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HistoryPage(),
     ),
     GoRoute(
+      path: '/history/timer',
+      builder: (context, state) =>
+          const HistoryPage(filter: HistoryFilter.interval),
+    ),
+    GoRoute(
+      path: '/history/stopwatch',
+      builder: (context, state) =>
+          const HistoryPage(filter: HistoryFilter.stopwatch),
+    ),
+    GoRoute(
       path: '/routine/new',
       builder: (context, state) => const RoutineEditPage(routineId: null),
     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/database_provider.dart';
@@ -66,6 +67,16 @@ class _Placeholder extends StatelessWidget {
     return Consumer(
       builder: (context, ref, _) {
         return Scaffold(
+          appBar: AppBar(
+            title: Text(l10n.tabTimer),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.history),
+                tooltip: l10n.historyOpenTimer,
+                onPressed: () => context.push('/history/timer'),
+              ),
+            ],
+          ),
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

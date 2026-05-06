@@ -72,5 +72,13 @@
   "stopwatchPbBadge": "PB",
   "stopwatchTrendTitle": "추이",
   "stopwatchLapDiff": "직전 대비",
-  "stopwatchNoPrior": "이 라벨의 첫 세션입니다."
+  "stopwatchNoPrior": "이 라벨의 첫 세션입니다.",
+  "historyTimerOnly": "루틴 기록",
+  "historyStopwatchOnly": "스톱워치 기록",
+  "historyOpenTimer": "타이머 기록 보기",
+  "historyOpenStopwatch": "스톱워치 기록 보기",
+  "emptyHistoryStopwatch": "아직 스톱워치 기록이 없어요",
+  "emptyHistoryTimer": "아직 완료된 루틴이 없어요",
+  "settingsDataSection": "기록",
+  "settingsViewAllHistory": "전체 히스토리 보기"
 }
