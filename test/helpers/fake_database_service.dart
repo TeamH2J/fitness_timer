@@ -18,6 +18,10 @@ class FakeDatabaseService extends DatabaseService {
   int insertHistoryCallCount = 0;
   int deleteCallCount = 0;
   int updateLabelCallCount = 0;
+  int deleteHistoryCallCount = 0;
+  int deleteStopwatchSessionCallCount = 0;
+  int deleteAllHistoriesCallCount = 0;
+  int insertHistoryRecordCallCount = 0;
   /// The label value most recently passed to [updateStopwatchSessionLabel].
   String? lastUpdatedLabel = 'NOT_SET'; // sentinel so null is distinguishable
 
@@ -148,6 +152,40 @@ class FakeDatabaseService extends DatabaseService {
     if (idx >= 0) {
       _stopwatchSessions[idx] = _stopwatchSessions[idx].copyWith(label: label);
     }
+  }
+
+  @override
+  Future<void> deleteHistory(String id) async {
+    deleteHistoryCallCount++;
+    _histories.removeWhere((h) => h.id == id);
+  }
+
+  @override
+  Future<History?> getHistoryById(String id) async {
+    try {
+      return _histories.firstWhere((h) => h.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> insertHistoryRecord(History h) async {
+    insertHistoryRecordCallCount++;
+    _histories.add(h);
+  }
+
+  @override
+  Future<void> deleteStopwatchSession(String id) async {
+    deleteStopwatchSessionCallCount++;
+    _stopwatchSessions.removeWhere((s) => s.id == id);
+  }
+
+  @override
+  Future<void> deleteAllHistories() async {
+    deleteAllHistoriesCallCount++;
+    _histories.clear();
+    _stopwatchSessions.clear();
   }
 
   @override

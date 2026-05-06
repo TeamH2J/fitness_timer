@@ -583,6 +583,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View all history'**
   String get settingsViewAllHistory;
+
+  /// No description provided for @historyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get historyDeleted;
+
+  /// No description provided for @historyUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get historyUndo;
+
+  /// No description provided for @settingsDeleteAllHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all history'**
+  String get settingsDeleteAllHistory;
+
+  /// No description provided for @deleteAllConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all history?'**
+  String get deleteAllConfirmTitle;
+
+  /// No description provided for @deleteAllConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'All routine completion records and stopwatch sessions will be permanently deleted. Routine definitions are kept.'**
+  String get deleteAllConfirmBody;
+
+  /// No description provided for @dialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get dialogCancel;
+
+  /// No description provided for @historyAllDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'All history deleted'**
+  String get historyAllDeleted;
 }
 
 class _AppLocalizationsDelegate
