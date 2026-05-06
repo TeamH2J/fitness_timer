@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/settings_provider.dart';
@@ -96,7 +97,20 @@ class SettingsPage extends ConsumerWidget {
           const Divider(),
 
           // -----------------------------------------------------------------
-          // Section 4 — App Info
+          // Section 4 — Data
+          // -----------------------------------------------------------------
+          _SectionHeader(title: l10n.settingsDataSection),
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: Text(l10n.settingsViewAllHistory),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/history'),
+          ),
+
+          const Divider(),
+
+          // -----------------------------------------------------------------
+          // Section 5 — App Info
           // -----------------------------------------------------------------
           _SectionHeader(title: l10n.settingsAppInfo),
           ListTile(

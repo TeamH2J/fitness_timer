@@ -226,4 +226,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stopwatchNoPrior => '이 라벨의 첫 세션입니다.';
+
+  @override
+  String get historyTimerOnly => '루틴 히스토리';
+
+  @override
+  String get historyStopwatchOnly => '스톱워치 히스토리';
+
+  @override
+  String get historyOpenTimer => '루틴 히스토리';
+
+  @override
+  String get historyOpenStopwatch => '스톱워치 히스토리';
+
+  @override
+  String get emptyHistoryStopwatch => '아직 스톱워치 기록이 없어요';
+
+  @override
+  String get emptyHistoryTimer => '아직 완료된 루틴이 없어요';
+
+  @override
+  String get settingsDataSection => '데이터';
+
+  @override
+  String get settingsViewAllHistory => '전체 히스토리 보기';
 }

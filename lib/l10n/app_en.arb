@@ -72,5 +72,13 @@
   "stopwatchPbBadge": "PB",
   "stopwatchTrendTitle": "Trend",
   "stopwatchLapDiff": "Δ vs prev",
-  "stopwatchNoPrior": "First session with this label."
+  "stopwatchNoPrior": "First session with this label.",
+  "historyTimerOnly": "Routine History",
+  "historyStopwatchOnly": "Stopwatch History",
+  "historyOpenTimer": "View timer history",
+  "historyOpenStopwatch": "View stopwatch history",
+  "emptyHistoryStopwatch": "No stopwatch sessions yet",
+  "emptyHistoryTimer": "No completed routines yet",
+  "settingsDataSection": "Data",
+  "settingsViewAllHistory": "View all history"
 }

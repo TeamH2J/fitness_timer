@@ -33,6 +33,16 @@ GoRouter buildAppRouter() {
         builder: (context, state) => const HistoryPage(),
       ),
       GoRoute(
+        path: '/history/timer',
+        builder: (context, state) =>
+            const HistoryPage(filter: HistoryFilter.interval),
+      ),
+      GoRoute(
+        path: '/history/stopwatch',
+        builder: (context, state) =>
+            const HistoryPage(filter: HistoryFilter.stopwatch),
+      ),
+      GoRoute(
         path: '/routine/new',
         builder: (context, state) => const RoutineEditPage(routineId: null),
       ),
@@ -168,5 +178,29 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Page not found.'), findsOneWidget);
+  });
+
+  testWidgets('T7.8 — /history/timer resolves to HistoryPage with "Routine History" title',
+      (tester) async {
+    final router = buildAppRouter();
+    await tester.pumpWidget(buildRouterApp(makeFakeDb(), router));
+    await tester.pump();
+    router.go('/history/timer');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(HistoryPage), findsOneWidget);
+    expect(find.text('Routine History'), findsOneWidget);
+  });
+
+  testWidgets('T7.9 — /history/stopwatch resolves to HistoryPage with "Stopwatch History" title',
+      (tester) async {
+    final router = buildAppRouter();
+    await tester.pumpWidget(buildRouterApp(makeFakeDb(), router));
+    await tester.pump();
+    router.go('/history/stopwatch');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(HistoryPage), findsOneWidget);
+    expect(find.text('Stopwatch History'), findsOneWidget);
   });
 }

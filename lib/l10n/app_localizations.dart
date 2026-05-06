@@ -535,6 +535,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'First session with this label.'**
   String get stopwatchNoPrior;
+
+  /// No description provided for @historyTimerOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Routine History'**
+  String get historyTimerOnly;
+
+  /// No description provided for @historyStopwatchOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopwatch History'**
+  String get historyStopwatchOnly;
+
+  /// No description provided for @historyOpenTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'View timer history'**
+  String get historyOpenTimer;
+
+  /// No description provided for @historyOpenStopwatch.
+  ///
+  /// In en, this message translates to:
+  /// **'View stopwatch history'**
+  String get historyOpenStopwatch;
+
+  /// No description provided for @emptyHistoryStopwatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No stopwatch sessions yet'**
+  String get emptyHistoryStopwatch;
+
+  /// No description provided for @emptyHistoryTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed routines yet'**
+  String get emptyHistoryTimer;
+
+  /// No description provided for @settingsDataSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsDataSection;
+
+  /// No description provided for @settingsViewAllHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View all history'**
+  String get settingsViewAllHistory;
 }
 
 class _AppLocalizationsDelegate

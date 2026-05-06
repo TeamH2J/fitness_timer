@@ -227,4 +227,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stopwatchNoPrior => 'First session with this label.';
+
+  @override
+  String get historyTimerOnly => 'Routine History';
+
+  @override
+  String get historyStopwatchOnly => 'Stopwatch History';
+
+  @override
+  String get historyOpenTimer => 'View timer history';
+
+  @override
+  String get historyOpenStopwatch => 'View stopwatch history';
+
+  @override
+  String get emptyHistoryStopwatch => 'No stopwatch sessions yet';
+
+  @override
+  String get emptyHistoryTimer => 'No completed routines yet';
+
+  @override
+  String get settingsDataSection => 'Data';
+
+  @override
+  String get settingsViewAllHistory => 'View all history';
 }

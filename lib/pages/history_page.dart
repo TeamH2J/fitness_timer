@@ -7,22 +7,47 @@ import '../l10n/app_localizations.dart';
 import '../models/stopwatch_session.dart';
 import '../providers/stopwatch_provider.dart';
 
+enum HistoryFilter { all, interval, stopwatch }
+
 class HistoryPage extends ConsumerWidget {
-  const HistoryPage({super.key});
+  const HistoryPage({super.key, this.filter = HistoryFilter.all});
+
+  final HistoryFilter filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final historyAsync = ref.watch(mergedHistoryProvider);
 
+    final title = switch (filter) {
+      HistoryFilter.all => l10n.history,
+      HistoryFilter.interval => l10n.historyTimerOnly,
+      HistoryFilter.stopwatch => l10n.historyStopwatchOnly,
+    };
+
+    final emptyMsg = switch (filter) {
+      HistoryFilter.all => l10n.emptyHistory,
+      HistoryFilter.interval => l10n.emptyHistoryTimer,
+      HistoryFilter.stopwatch => l10n.emptyHistoryStopwatch,
+    };
+
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.history)),
+      appBar: AppBar(title: Text(title)),
       body: historyAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(l10n.errorLoadData)),
-        data: (entries) => entries.isEmpty
-            ? Center(child: Text(l10n.emptyHistory))
-            : _HistoryList(entries: entries, l10n: l10n),
+        data: (entries) {
+          final visible = filter == HistoryFilter.all
+              ? entries
+              : entries
+                  .where((e) => filter == HistoryFilter.interval
+                      ? e.type == HistoryEntryType.interval
+                      : e.type == HistoryEntryType.stopwatch)
+                  .toList();
+          return visible.isEmpty
+              ? Center(child: Text(emptyMsg))
+              : _HistoryList(entries: visible, l10n: l10n);
+        },
       ),
     );
   }
