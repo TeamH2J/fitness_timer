@@ -42,3 +42,14 @@ coverage/
 .claude/state/
 .claude/outputs/
 .claude/scheduled_tasks.lock
+
+# Android signing secrets
+android/key.properties
+*.jks
+*.keystore
+
+# Fastlane secrets and generated artifacts
+android/fastlane/play-store-credentials.json
+android/fastlane/report.xml
+android/fastlane/Preview.html
+android/fastlane/README.md
